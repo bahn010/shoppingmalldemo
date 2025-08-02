@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const indexRouter = require("./routes/index")
 const app = express();
 
 require('dotenv').config();
@@ -9,6 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
+app.use("/api", indexRouter)
 
 const mongoURI = process.env.Local_DB_Address;
 mongoose.connect(mongoURI, {useNewUrlParser: true, useUnifiedTopology: true}).then(() => console.log("MongoDB connected")).catch(err => console.log(err));
