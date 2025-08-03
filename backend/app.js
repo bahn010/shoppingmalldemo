@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const indexRouter = require("./routes/index")
+const port = process.env.PORT || 5000;
 const app = express();
 
 require('dotenv').config();
@@ -10,9 +11,25 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
+// 루트 경로 핸들러 추가
+app.get('/', (req, res) => {
+  res.json({ message: 'Shopping Mall API is running!' });
+});
+
+// API 라우트 설정
 app.use("/api", indexRouter)
 
-const mongoURI = process.env.Local_DB_Address;
-mongoose.connect(mongoURI, {useNewUrlParser: true, useUnifiedTopology: true}).then(() => console.log("MongoDB connected")).catch(err => console.log(err));
 
-app.listen(process.env.PORT || 5000, () => console.log(`Server running on port ${process.env.PORT}`));
+
+
+const mongoURI = process.env.Local_DB_Address;
+if (mongoURI) {
+  mongoose.connect(mongoURI, {useNewUrlParser: true, useUnifiedTopology: true})
+    .then(() => console.log("MongoDB connected"))
+    .catch(err => console.log("MongoDB connection error:", err));
+} else {
+  console.log("MongoDB URI not found, skipping database connection");
+}
+
+// AWS Elastic Beanstalk에서는 8080 포트를 사용
+app.listen(port, () => console.log(`Server running on port ${port}`));
