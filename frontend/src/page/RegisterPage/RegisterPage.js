@@ -110,7 +110,7 @@ const RegisterPage = () => {
             onChange={handleChange}
             required
             isInvalid={passwordError}
-          />ㅉ
+          />
           <Form.Control.Feedback type="invalid">
             {passwordError}
           </Form.Control.Feedback>
