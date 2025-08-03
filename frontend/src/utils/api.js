@@ -8,7 +8,6 @@ const api = axios.create({
   baseURL: LOCAL_BACKEND,
   headers: {
     "Content-Type": "application/json",
-    authorization: `Bearer ${sessionStorage.getItem("token")}`,
   },
 });
 /**
@@ -17,11 +16,15 @@ const api = axios.create({
 api.interceptors.request.use(
   (request) => {
     console.log("Starting Request", request);
-    request.headers.authorization = `Bearer ${sessionStorage.getItem("token")}`;
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+    if (token) {
+      request.headers.authorization = `Bearer ${token}`;
+    }
     return request;
   },
   function (error) {
     console.log("REQUEST ERROR", error);
+    return Promise.reject(error);
   }
 );
 

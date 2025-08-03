@@ -6,7 +6,14 @@ import { initialCart } from "../cart/cartSlice";
 
 export const loginWithEmail = createAsyncThunk(
   "user/loginWithEmail",
-  async ({ email, password }, { rejectWithValue }) => {}
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/auth/login", { email, password })
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.error)
+    }
+  }
 );
 
 export const loginWithGoogle = createAsyncThunk(
@@ -14,7 +21,20 @@ export const loginWithGoogle = createAsyncThunk(
   async (token, { rejectWithValue }) => {}
 );
 
-export const logout = () => (dispatch) => {};
+export const logout = () => (dispatch) => {
+  // 토큰 제거
+  sessionStorage.removeItem("token");
+  localStorage.removeItem("token");
+  
+  // 사용자 상태 초기화
+  dispatch(clearUser());
+  
+  // 장바구니 초기화
+  dispatch(initialCart());
+  
+  // 토스트 메시지 표시
+  dispatch(showToastMessage({ message: "로그아웃되었습니다.", status: "success" }));
+};
 export const registerUser = createAsyncThunk(
   "user/registerUser",
   async (
@@ -38,7 +58,42 @@ export const registerUser = createAsyncThunk(
 
 export const loginWithToken = createAsyncThunk(
   "user/loginWithToken",
-  async (_, { rejectWithValue }) => {}
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      console.log("Token found:", token ? "Yes" : "No");
+      
+      if (!token) {
+        console.log("No token found, rejecting");
+        return rejectWithValue("No token found");
+      }
+      
+      console.log("Making request to /auth/me");
+      const response = await api.get("/auth/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      console.log("Response received:", response.data);
+      return response.data;
+    } catch (err) {
+      console.log("Error in loginWithToken:", err);
+      console.log("Error response:", err.response);
+      
+      // 401 Unauthorized 에러일 때만 토큰 제거
+      if (err.response?.status === 401) {
+        console.log("401 error, removing token");
+        sessionStorage.removeItem("token");
+        localStorage.removeItem("token");
+        return rejectWithValue("Token expired or invalid");
+      }
+      
+      // 다른 에러는 토큰을 유지하고 에러만 반환
+      console.log("Other error, keeping token");
+      return rejectWithValue(err.response?.data?.message || "Network error");
+    }
+  }
 );
 
 const userSlice = createSlice({
@@ -55,6 +110,13 @@ const userSlice = createSlice({
       state.loginError = null;
       state.registrationError = null;
     },
+    clearUser: (state) => {
+      state.user = null;
+      state.loading = false;
+      state.loginError = null;
+      state.registrationError = null;
+      state.success = false;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(registerUser.fulfilled, (state, action) => {
@@ -70,7 +132,43 @@ const userSlice = createSlice({
       state.registrationError = action.payload;
       state.loading = false;
     })
+    builder.addCase(loginWithEmail.fulfilled, (state, action) => {
+      state.user = action.payload.user;
+      state.loading = false;
+      state.loginError = null;
+      state.success = true;
+      sessionStorage.setItem("token", action.payload.token);
+    })
+    builder.addCase(loginWithEmail.pending, (state) => {
+      state.loading = true;
+    })
+    builder.addCase(loginWithEmail.rejected, (state, action) => {
+      state.loginError = action.payload;
+      state.loading = false;
+    })
+    builder.addCase(loginWithToken.fulfilled, (state, action) => {
+      state.user = action.payload.user;
+      state.loading = false;
+      state.loginError = null;
+      state.success = true;
+    })
+    builder.addCase(loginWithToken.pending, (state) => {
+      state.loading = true;
+    })
+    builder.addCase(loginWithToken.rejected, (state, action) => {
+      console.log("loginWithToken rejected with payload:", action.payload);
+      
+      // 토큰이 없거나 만료된 경우에만 사용자 상태 초기화
+      if (action.payload === "No token found" || action.payload === "Token expired or invalid") {
+        console.log("Clearing user state due to token issue");
+        state.user = null;
+      } else {
+        console.log("Keeping user state for other errors");
+      }
+      state.loading = false;
+      state.loginError = null;
+    })
   },
 });
-export const { clearErrors } = userSlice.actions;
+export const { clearErrors, clearUser } = userSlice.actions;
 export default userSlice.reducer;

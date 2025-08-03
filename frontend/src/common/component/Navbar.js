@@ -39,6 +39,7 @@ const Navbar = ({ user }) => {
   };
   const handleLogout = () => {
     dispatch(logout());
+    navigate("/"); // 메인 페이지로 리다이렉트
   };
   return (
     <div>
