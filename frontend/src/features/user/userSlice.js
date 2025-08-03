@@ -38,12 +38,12 @@ export const logout = () => (dispatch) => {
 export const registerUser = createAsyncThunk(
   "user/registerUser",
   async (
-    { email, name, password, navigate },
+    { email, name, password, adminSecret, navigate },
     { dispatch, rejectWithValue }
   ) => {
     try {
 
-      const response = await api.post("/user", {email, name, password})
+      const response = await api.post("/user", {email, name, password, adminSecret})
       dispatch(showToastMessage({message: "회원가입을 성공했습니다!", status: "success"}))
       navigate("/login")
       return response.data.data;
