@@ -1,15 +1,10 @@
 [build]
   base = "frontend"
-  command = "CI=false npm run build"
+  command = "rm -rf node_modules package-lock.json && npm install && CI=false npm run build"
   publish = "build"
 
 [build.environment]
   NODE_VERSION = "18"
-
-[[redirects]]
-  from = "/api/*"
-  to = "http://shoppingmalldemo.ap-northeast-2.elasticbeanstalk.com/api/:splat"
-  status = 200
 
 [[redirects]]
   from = "/*"
