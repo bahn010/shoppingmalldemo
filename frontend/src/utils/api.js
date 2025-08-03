@@ -12,26 +12,30 @@ const api = axios.create({
  */
 api.interceptors.request.use(
   (request) => {
-    console.log("Starting Request", request);
-    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (token) {
-      request.headers.authorization = `Bearer ${token}`;
+      request.headers.Authorization = `Bearer ${token}`;
     }
+    console.log("Starting Request", request);
     return request;
   },
   function (error) {
     console.log("REQUEST ERROR", error);
-    return Promise.reject(error);
   }
 );
 
 api.interceptors.response.use(
   (response) => {
+    console.log("Response:", response);
     return response;
   },
   function (error) {
-    error = error.response.data;
-    console.log("RESPONSE ERROR", error);
+    if (error.response && error.response.data) {
+      if (typeof error.response.data === 'object' && error.response.data.message) {
+        return Promise.reject(new Error(error.response.data.message));
+      }
+      return Promise.reject(error.response.data);
+    }
     return Promise.reject(error);
   }
 );
