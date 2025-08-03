@@ -69,11 +69,7 @@ export const loginWithToken = createAsyncThunk(
       }
       
       console.log("Making request to /auth/me");
-      const response = await api.get("/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get("/auth/me");
       
       console.log("Response received:", response.data);
       return response.data;
@@ -87,6 +83,12 @@ export const loginWithToken = createAsyncThunk(
         sessionStorage.removeItem("token");
         localStorage.removeItem("token");
         return rejectWithValue("Token expired or invalid");
+      }
+      
+      // 네트워크 에러나 연결 실패 시 토큰을 유지하고 조용히 실패
+      if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
+        console.log("Network error, keeping token and failing silently");
+        return rejectWithValue("Network error");
       }
       
       // 다른 에러는 토큰을 유지하고 에러만 반환
@@ -162,6 +164,9 @@ const userSlice = createSlice({
       if (action.payload === "No token found" || action.payload === "Token expired or invalid") {
         console.log("Clearing user state due to token issue");
         state.user = null;
+      } else if (action.payload === "Network error") {
+        // 네트워크 에러는 조용히 처리하고 사용자 상태 유지
+        console.log("Network error, keeping user state");
       } else {
         console.log("Keeping user state for other errors");
       }
