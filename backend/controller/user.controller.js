@@ -20,10 +20,10 @@ userController.CreateUser = async (req, res) => {
     await newUser.save()
 
     return res.status(200).json({status: "success", message: "회원가입이 완료되었습니다."})
-    
+
   }
   catch(err) {
-    res.status(400).json({status: "fail", message: err.message})
+    res.status(400).json({status: "fail", error: err.message})
   }
 }
 
