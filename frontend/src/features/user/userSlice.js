@@ -59,27 +59,37 @@ export const registerUser = createAsyncThunk(
 export const loginWithToken = createAsyncThunk(
   "user/loginWithToken",
   async (_, { rejectWithValue }) => {
+    console.log("🔍 DEBUG - loginWithToken started");
     try {
       const token = sessionStorage.getItem("token") || localStorage.getItem("token");
-      console.log("Token found:", token ? "Yes" : "No");
+      console.log("🔍 DEBUG - Token check:");
+      console.log("  - Token from sessionStorage:", sessionStorage.getItem("token"));
+      console.log("  - Token from localStorage:", localStorage.getItem("token"));
+      console.log("  - Final token:", token);
+      console.log("  - Token found:", token ? "Yes" : "No");
       
       if (!token) {
-        console.log("No token found, rejecting");
+        console.log("❌ No token found, rejecting");
         return rejectWithValue("No token found");
       }
       
-      console.log("Making request to /auth/me");
+      console.log("🚀 Making request to /auth/me");
+      console.log("🔍 DEBUG - About to make API call");
       const response = await api.get("/auth/me");
       
-      console.log("Response received:", response.data);
+      console.log("✅ Response received:", response.data);
       return response.data;
     } catch (err) {
-      console.log("Error in loginWithToken:", err);
-      console.log("Error response:", err.response);
+      console.log("🚨 Error in loginWithToken:");
+      console.log("  - Error object:", err);
+      console.log("  - Error message:", err.message);
+      console.log("  - Error code:", err.code);
+      console.log("  - Error response:", err.response);
+      console.log("  - Error config:", err.config);
       
       // 401 Unauthorized 에러일 때만 토큰 제거
       if (err.response?.status === 401) {
-        console.log("401 error, removing token");
+        console.log("🔐 401 error, removing token");
         sessionStorage.removeItem("token");
         localStorage.removeItem("token");
         return rejectWithValue("Token expired or invalid");
@@ -87,12 +97,12 @@ export const loginWithToken = createAsyncThunk(
       
       // 네트워크 에러나 연결 실패 시 토큰을 유지하고 조용히 실패
       if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
-        console.log("Network error, keeping token and failing silently");
+        console.log("🌐 Network error, keeping token and failing silently");
         return rejectWithValue("Network error");
       }
       
       // 다른 에러는 토큰을 유지하고 에러만 반환
-      console.log("Other error, keeping token");
+      console.log("⚠️ Other error, keeping token");
       return rejectWithValue(err.response?.data?.message || "Network error");
     }
   }
