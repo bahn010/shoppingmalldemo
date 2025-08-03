@@ -8,7 +8,12 @@ const app = express();
 
 require('dotenv').config();
 // CORS 설정 개선
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://shoppingmalldemo.netlify.app'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 

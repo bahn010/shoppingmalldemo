@@ -1,7 +1,17 @@
 import axios from "axios";
 
+// 환경에 따라 다른 baseURL 사용
+const getBaseURL = () => {
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:5000/api';
+  } else {
+    // 프로덕션에서는 직접 백엔드 URL 사용
+    return 'http://shoppingmalldemo.ap-northeast-2.elasticbeanstalk.com/api';
+  }
+};
+
 const api = axios.create({
-  baseURL: `${process.env.REACT_APP_BACKEND_PROXY}/api`,
+  baseURL: getBaseURL(),
   headers: {  
     "Content-Type": "application/json",
   },
