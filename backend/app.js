@@ -7,7 +7,13 @@ const port = process.env.PORT || 5000;
 const app = express();
 
 require('dotenv').config();
-app.use(cors());
+// CORS 설정 개선
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://your-frontend-domain.com', 'http://localhost:3001'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
