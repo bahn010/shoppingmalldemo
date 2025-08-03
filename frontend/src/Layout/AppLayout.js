@@ -15,8 +15,6 @@ const AppLayout = ({ children }) => {
 
   const { user } = useSelector((state) => state.user);
   useEffect(() => {
-    console.log("🔍 DEBUG - AppLayout useEffect triggered");
-    console.log("🔍 DEBUG - About to dispatch loginWithToken");
     dispatch(loginWithToken());
   }, []);
   useEffect(() => {
