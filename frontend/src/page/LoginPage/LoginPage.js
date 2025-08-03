@@ -16,11 +16,10 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // 페이지 진입 시 오류 상태 초기화
   useEffect(() => {
-    if (loginError) {
-      dispatch(clearErrors());
-    }
-  }, [navigate]);
+    dispatch(clearErrors());
+  }, [dispatch]);
   const handleLoginWithEmail = (event) => {
     event.preventDefault();
     dispatch(loginWithEmail({ email, password }));
@@ -48,7 +47,13 @@ const Login = () => {
               type="email"
               placeholder="Enter email"
               required
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                // 입력 시 오류 메시지 초기화
+                if (loginError) {
+                  dispatch(clearErrors());
+                }
+              }}
             />
           </Form.Group>
 
@@ -58,7 +63,13 @@ const Login = () => {
               type="password"
               placeholder="Password"
               required
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(event) => {
+                setPassword(event.target.value);
+                // 입력 시 오류 메시지 초기화
+                if (loginError) {
+                  dispatch(clearErrors());
+                }
+              }}
             />
           </Form.Group>
           <div className="display-space-between login-button-area">
