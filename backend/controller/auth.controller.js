@@ -2,6 +2,8 @@ const authController = {}
 const User = require("../model/user")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+require("dotenv").config()
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
 
 authController.loginWithEmail = async (req, res) => {
   try {
@@ -22,48 +24,19 @@ authController.loginWithEmail = async (req, res) => {
   }
 }
 
-authController.getMe = async (req, res) => {
+authController.authenticateToken = async (req, res, next) => {
   try {
-    console.log("getMe endpoint called");
-    console.log("Headers:", req.headers);
-    
-    const token = req.headers.authorization?.split(' ')[1];
-    console.log("Token extracted:", token ? "Yes" : "No");
-    
-    if (!token) {
-      console.log("No token provided");
-      return res.status(401).json({ message: "토큰이 없습니다." });
-    }
+    const tokenstring = req.headers.authorization
+    if (!tokenstring) throw new Error("토큰이 존재하지 않습니다.")
+    const token = tokenstring.replace("Bearer ", "")
+    jwt.verify(token, JWT_SECRET_KEY, (err, payload) => {
+      if (err) throw new Error("토큰이 유효하지 않습니다.")
+      req.userID = payload.id
+      next()
+    })
 
-    console.log("Verifying token with secret:", process.env.JWT_SECRET_KEY ? "Secret exists" : "No secret");
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log("Token decoded:", decoded);
-    
-    const user = await User.findById(decoded.id).select('-password');
-    console.log("User found:", user ? "Yes" : "No");
-    
-    if (!user) {
-      console.log("User not found in database");
-      return res.status(401).json({ message: "유효하지 않은 토큰입니다." });
-    }
-
-    console.log("Sending success response");
-    return res.status(200).json({ 
-      status: "success", 
-      user: user 
-    });
   } catch (err) {
-    console.log("Error in getMe:", err);
-    if (err.name === 'JsonWebTokenError') {
-      console.log("JWT verification failed");
-      return res.status(401).json({ message: "유효하지 않은 토큰입니다." });
-    }
-    if (err.name === 'TokenExpiredError') {
-      console.log("Token expired");
-      return res.status(401).json({ message: "토큰이 만료되었습니다." });
-    }
-    console.log("Other error occurred");
-    return res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    return res.status(400).json({ status: "fail", error: err.message })
   }
 }
 

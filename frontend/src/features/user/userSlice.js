@@ -63,7 +63,7 @@ export const loginWithToken = createAsyncThunk(
   "user/loginWithToken",
   async (_, { rejectWithValue }) => {
     try {
-      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      const token = sessionStorage.getItem("token")
       
       if (!token) {
         return rejectWithValue("No token found");
@@ -71,12 +71,10 @@ export const loginWithToken = createAsyncThunk(
       
       const response = await api.get("/auth/me");
       return response.data;
+
     } catch (err) {
-      // 401 Unauthorized 에러일 때만 토큰 제거
       if (err.response?.status === 401) {
-        sessionStorage.removeItem("token");
-        localStorage.removeItem("token");
-        return rejectWithValue("Token expired or invalid");
+        return rejectWithValue(err.error);
       }
       
       return rejectWithValue(err.response?.data?.message || "Network error");
@@ -139,25 +137,6 @@ const userSlice = createSlice({
       state.loading = false;
       state.loginError = null;
       state.success = true;
-    })
-    builder.addCase(loginWithToken.pending, (state) => {
-      state.loading = true;
-    })
-    builder.addCase(loginWithToken.rejected, (state, action) => {
-      console.log("loginWithToken rejected with payload:", action.payload);
-      
-      // 토큰이 없거나 만료된 경우에만 사용자 상태 초기화
-      if (action.payload === "No token found" || action.payload === "Token expired or invalid") {
-        console.log("Clearing user state due to token issue");
-        state.user = null;
-      } else if (action.payload === "Network error") {
-        // 네트워크 에러는 조용히 처리하고 사용자 상태 유지
-        console.log("Network error, keeping user state");
-      } else {
-        console.log("Keeping user state for other errors");
-      }
-      state.loading = false;
-      state.loginError = null;
     })
   },
 });
