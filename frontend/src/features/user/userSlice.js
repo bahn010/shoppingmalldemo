@@ -6,12 +6,15 @@ import { initialCart } from "../cart/cartSlice";
 
 export const loginWithEmail = createAsyncThunk(
   "user/loginWithEmail",
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.post("/auth/login", { email, password })
       return response.data;
     } catch (err) {
-      return rejectWithValue(err.error)
+      console.log("Login error:", err);
+      const errorMessage = err.message || "로그인에 실패했습니다.";
+      dispatch(showToastMessage({ message: errorMessage, status: "error" }));
+      return rejectWithValue(errorMessage);
     }
   }
 );

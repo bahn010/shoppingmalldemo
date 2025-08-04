@@ -41,7 +41,9 @@ const Login = () => {
       <Container className="login-area">
         {loginError && (
           <div className="error-message">
-            <Alert variant="danger">{loginError}</Alert>
+            <Alert variant="danger">
+              <strong>로그인 실패:</strong> {loginError}
+            </Alert>
           </div>
         )}
         <Form className="login-form" onSubmit={handleLoginWithEmail}>
