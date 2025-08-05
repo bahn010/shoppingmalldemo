@@ -8,31 +8,86 @@ const UPLOADPRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 class CloudinaryUploadWidget extends Component {
   componentDidMount() {
-    var myWidget = window.cloudinary.createUploadWidget(
-      {
-        cloudName: CLOUDNAME,
-        uploadPreset: UPLOADPRESET,
-      },
-      (error, result) => {
-        if (!error && result && result.event === "success") {
-          console.log("Done! Here is the image info: ", result.info);
-          document
-            .getElementById("uploadedimage")
-            .setAttribute("src", result.info.secure_url);
-          this.props.uploadImage(result.info.secure_url);
+    // 환경변수 검증
+    if (!CLOUDNAME || !UPLOADPRESET) {
+      console.error("Cloudinary 환경변수가 설정되지 않았습니다:", {
+        CLOUDNAME,
+        UPLOADPRESET
+      });
+      return;
+    }
+
+    // Cloudinary 스크립트가 이미 로드되었는지 확인
+    if (window.cloudinaryLoaded && window.cloudinary) {
+      this.initializeWidget();
+    } else {
+      // 스크립트 로딩 이벤트를 기다림
+      window.addEventListener('cloudinaryLoaded', this.initializeWidget);
+      // 백업: 일정 시간 후에도 로드되지 않으면 재시도
+      setTimeout(() => {
+        if (window.cloudinary) {
+          this.initializeWidget();
         }
-      } //https://cloudinary.com/documentation/react_image_and_video_upload
-    );
-    document.getElementById("upload_widget").addEventListener(
-      "click",
-      function () {
-        myWidget.open();
-      },
-      false
-    );
+      }, 2000);
+    }
   }
 
+  componentWillUnmount() {
+    // 이벤트 리스너 정리
+    window.removeEventListener('cloudinaryLoaded', this.initializeWidget);
+  }
+
+  initializeWidget = () => {
+    try {
+      if (!window.cloudinary) {
+        console.error("Cloudinary 스크립트가 로드되지 않았습니다.");
+        return;
+      }
+
+      var myWidget = window.cloudinary.createUploadWidget(
+        {
+          cloudName: CLOUDNAME,
+          uploadPreset: UPLOADPRESET,
+        },
+        (error, result) => {
+          if (!error && result && result.event === "success") {
+            console.log("Done! Here is the image info: ", result.info);
+            const uploadedImageElement = document.getElementById("uploadedimage");
+            if (uploadedImageElement) {
+              uploadedImageElement.setAttribute("src", result.info.secure_url);
+            }
+            this.props.uploadImage(result.info.secure_url);
+          } else if (error) {
+            console.error("Upload error:", error);
+          }
+        }
+      );
+
+      const uploadWidgetElement = document.getElementById("upload_widget");
+      if (uploadWidgetElement) {
+        uploadWidgetElement.addEventListener(
+          "click",
+          function () {
+            myWidget.open();
+          },
+          false
+        );
+      }
+    } catch (error) {
+      console.error("Cloudinary 위젯 초기화 오류:", error);
+    }
+  };
+
   render() {
+    // 환경변수가 없으면 업로드 버튼을 비활성화
+    if (!CLOUDNAME || !UPLOADPRESET) {
+      return (
+        <Button size="sm" className="ml-2" disabled>
+          환경변수 설정 필요
+        </Button>
+      );
+    }
+
     return (
       <Button id="upload_widget" size="sm" className="ml-2">
         Upload Image +
