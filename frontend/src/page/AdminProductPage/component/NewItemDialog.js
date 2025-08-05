@@ -22,6 +22,10 @@ const InitialFormData = {
 };
 
 const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
+  console.log("NewItemDialog 렌더링됨");
+  console.log("showDialog prop:", showDialog);
+  console.log("mode prop:", mode);
+  
   const { error, success, selectedProduct } = useSelector(
     (state) => state.product
   );
@@ -58,7 +62,11 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
   const handleClose = () => {
     //모든걸 초기화시키고;
+    setFormData({ ...InitialFormData });
+    setStock([]);
+    setStockError(false);
     // 다이얼로그 닫아주기
+    setShowDialog(false);
   };
 
   const handleSubmit = (event) => {
