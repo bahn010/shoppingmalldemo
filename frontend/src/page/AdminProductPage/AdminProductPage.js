@@ -57,15 +57,8 @@ const AdminProductPage = () => {
   };
 
   const handleClickNewItem = () => {
-    console.log("Add New Item 버튼 클릭됨!");
-    console.log("현재 showDialog 상태:", showDialog);
-    console.log("현재 mode 상태:", mode);
-    
     setMode("new");
     setShowDialog(true);
-    
-    console.log("setMode와 setShowDialog 호출 후");
-    console.log("showDialog가 true로 설정됨:", true);
   };
 
   const handlePageClick = ({ selected }) => {
