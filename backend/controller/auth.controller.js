@@ -40,5 +40,15 @@ authController.authenticateToken = async (req, res, next) => {
   }
 }
 
+authController.checkAdminPermission = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userID)
+    if (user.role !== "admin") throw new Error("관리자 권한이 없습니다.")
+    next()
+  } catch (err) {
+    return res.status(400).json({ status: "fail", error: err.message })
+  }
+}
+
 
 module.exports = authController

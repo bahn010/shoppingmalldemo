@@ -15,7 +15,24 @@ export const getProductDetail = createAsyncThunk(
 
 export const createProduct = createAsyncThunk(
   "products/createProduct",
-  async (formData, { dispatch, rejectWithValue }) => {}
+  async (formData, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await api.post("/product", formData);
+      if (response.status !== 200) {
+        throw new Error(response.data.error);
+      }
+      // 토스트 메시지 띄우기
+      dispatch(showToastMessage({
+        message: "상품이 성공적으로 생성되었습니다.",
+        status: "success",
+      }));
+      // 상품 목록 새로고침
+      dispatch(getProductList());
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
 );
 
 export const deleteProduct = createAsyncThunk(
@@ -51,7 +68,19 @@ const productSlice = createSlice({
       state.success = false;
     },
   },
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder.addCase(createProduct.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(createProduct.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+    });
+    builder.addCase(createProduct.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+  },
 });
 
 export const { setSelectedProduct, setFilteredList, clearError } =

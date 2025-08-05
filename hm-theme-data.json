@@ -1,0 +1,229 @@
+{
+  "theme": {
+    "name": "H&M Theme",
+    "description": "H&M 웹사이트에서 추출한 디자인 테마 데이터",
+    "version": "1.0.0",
+    "source": "https://www2.hm.com/ko_kr/index.html"
+  },
+  "colors": {
+    "primary": {
+      "black": "#000000",
+      "white": "#FFFFFF",
+      "gray": {
+        "light": "#F0F0F0",
+        "medium": "#CCCCCC",
+        "dark": "#737373",
+        "darker": "#333333"
+      }
+    },
+    "text": {
+      "primary": "#000000",
+      "secondary": "#737373",
+      "white": "#FFFFFF"
+    },
+    "background": {
+      "primary": "#FFFFFF",
+      "secondary": "#F0F0F0",
+      "overlay": "rgba(0, 0, 0, 0.5)"
+    },
+    "border": {
+      "light": "#E0E0E0",
+      "medium": "#CCCCCC"
+    },
+    "usedColors": [
+      "rgb(0, 0, 0)",
+      "rgb(255, 255, 255)",
+      "rgb(115, 115, 115)",
+      "rgba(0, 0, 0, 0.5)",
+      "rgb(51, 51, 51)",
+      "rgb(240, 240, 240)",
+      "rgb(204, 204, 204)",
+      "rgb(224, 224, 224)"
+    ]
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": "\"Noto Sans KR\", \"Noto Sans KR Regular\", NotoSansKR-Regular, \"ヒラギノ角ゴ Pro W3\", \"Hiragino Kaku Gothic Pro\", Osaka, メイリオ, Meiryo, \"ＭＳ Ｐゴシック\", \"MS PGothic\", sans-serif",
+      "secondary": "\"HM Slussen\", \"ヒラギノ角ゴ Pro W3\", \"Hiragino Kaku Gothic Pro\", Osaka, メイリ오, Meiryo, \"ＭＳ Ｐゴシック\", \"MS PGothic\", sans-serif",
+      "fallback": "Arial, sans-serif",
+      "bold": "\"Noto Sans KR Bold\", NotoSansKR-Bold, \"ヒラギノ角ゴ Pro W3\", \"Hiragino Kaku Gothic Pro\", Osaka, メイリオ, Meiryo, \"ＭＳ Ｐゴシック\", \"MS PGothic\", sans-serif"
+    },
+    "fontSize": {
+      "small": "13px",
+      "base": "14px",
+      "large": "16px",
+      "xlarge": "24px"
+    },
+    "fontWeight": {
+      "light": "100",
+      "normal": "400",
+      "bold": "700"
+    },
+    "lineHeight": "16.9px",
+    "letterSpacing": "normal",
+    "textTransform": {
+      "uppercase": "uppercase",
+      "none": "none"
+    }
+  },
+  "spacing": {
+    "padding": {
+      "small": "4px",
+      "medium": "10px",
+      "large": "16px",
+      "xlarge": "24px"
+    },
+    "margin": {
+      "none": "0px",
+      "small": "4px",
+      "medium": "10px",
+      "large": "16px"
+    },
+    "borderRadius": "0px"
+  },
+  "components": {
+    "header": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "#000000",
+      "padding": "0px",
+      "borderBottom": "0px none #000000",
+      "boxShadow": "none"
+    },
+    "main": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "padding": "0px",
+      "margin": "0px",
+      "maxWidth": "none"
+    },
+    "footer": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "#000000",
+      "padding": "48px 24px",
+      "borderTop": "0px none #000000"
+    },
+    "productCard": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none #000000",
+      "borderRadius": "0px",
+      "padding": "16px 0px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "transition": "all"
+    },
+    "buttons": {
+      "primary": {
+        "backgroundColor": "#000000",
+        "color": "#FFFFFF",
+        "border": "0px none #FFFFFF",
+        "borderRadius": "0px",
+        "padding": "4px 24px",
+        "fontSize": "14px",
+        "fontWeight": "100",
+        "textTransform": "uppercase",
+        "letterSpacing": "normal"
+      },
+      "secondary": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "#000000",
+        "border": "0.8px solid #000000",
+        "borderRadius": "0px",
+        "padding": "3px 23px",
+        "fontSize": "14px",
+        "fontWeight": "100",
+        "textTransform": "uppercase",
+        "letterSpacing": "normal"
+      },
+      "text": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "#000000",
+        "border": "0px none #000000",
+        "borderRadius": "0px",
+        "padding": "0px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "textTransform": "uppercase",
+        "letterSpacing": "normal"
+      },
+      "gray": {
+        "backgroundColor": "#F0F0F0",
+        "color": "#000000",
+        "border": "0px none #000000",
+        "borderRadius": "0px",
+        "padding": "10px",
+        "fontSize": "13px",
+        "fontWeight": "700",
+        "textTransform": "none",
+        "letterSpacing": "normal"
+      }
+    },
+    "links": {
+      "primary": {
+        "color": "#000000",
+        "textDecoration": "none solid #000000",
+        "fontSize": "14px",
+        "fontWeight": "400"
+      },
+      "secondary": {
+        "color": "#737373",
+        "textDecoration": "none solid #737373",
+        "fontSize": "14px",
+        "fontWeight": "400"
+      },
+      "underlined": {
+        "color": "#000000",
+        "textDecoration": "underline solid #000000",
+        "fontSize": "14px",
+        "fontWeight": "400"
+      },
+      "white": {
+        "color": "#FFFFFF",
+        "textDecoration": "none solid #FFFFFF",
+        "fontSize": "14px",
+        "fontWeight": "400"
+      }
+    }
+  },
+  "layout": {
+    "maxWidth": "none",
+    "padding": "0px",
+    "margin": "0px",
+    "lineHeight": "16.9px",
+    "letterSpacing": "normal"
+  },
+  "designPrinciples": {
+    "minimalism": "깔끔하고 미니멀한 디자인",
+    "typography": "Noto Sans KR 폰트를 주로 사용하는 타이포그래피 중심",
+    "colorScheme": "흑백을 기본으로 한 모노크롬 컬러 스킴",
+    "spacing": "여백을 충분히 활용한 여유로운 레이아웃",
+    "buttons": "대문자 텍스트와 얇은 폰트 웨이트를 사용한 버튼",
+    "borders": "둥근 모서리 없이 직선적인 디자인",
+    "transitions": "부드러운 전환 효과"
+  },
+  "cssVariables": {
+    "suggested": {
+      "--color-primary": "#000000",
+      "--color-secondary": "#FFFFFF",
+      "--color-text-primary": "#000000",
+      "--color-text-secondary": "#737373",
+      "--color-background-primary": "#FFFFFF",
+      "--color-background-secondary": "#F0F0F0",
+      "--color-border-light": "#E0E0E0",
+      "--color-border-medium": "#CCCCCC",
+      "--font-family-primary": "\"Noto Sans KR\", sans-serif",
+      "--font-family-secondary": "\"HM Slussen\", sans-serif",
+      "--font-size-small": "13px",
+      "--font-size-base": "14px",
+      "--font-size-large": "16px",
+      "--font-size-xlarge": "24px",
+      "--font-weight-light": "100",
+      "--font-weight-normal": "400",
+      "--font-weight-bold": "700",
+      "--spacing-small": "4px",
+      "--spacing-medium": "10px",
+      "--spacing-large": "16px",
+      "--spacing-xlarge": "24px",
+      "--border-radius": "0px",
+      "--text-transform-uppercase": "uppercase"
+    }
+  }
+} 
