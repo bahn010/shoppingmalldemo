@@ -144,6 +144,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
   return (
     <Modal show={showDialog} onHide={handleClose}>
+      {console.log("Modal show prop:", showDialog)}
       <Modal.Header closeButton>
         {mode === "new" ? (
           <Modal.Title>Create New Product</Modal.Title>
