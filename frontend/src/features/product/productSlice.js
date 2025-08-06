@@ -5,7 +5,17 @@ import { showToastMessage } from "../common/uiSlice";
 // 비동기 액션 생성
 export const getProductList = createAsyncThunk(
   "products/getProductList",
-  async (query, { rejectWithValue }) => {}
+  async (query, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/product", { params: query });
+      if (response.status !== 200) {
+        throw new Error(response.data.error);
+      }
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
 );
 
 export const getProductDetail = createAsyncThunk(
@@ -80,6 +90,18 @@ const productSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
       state.success = false;
+    });
+    builder.addCase(getProductList.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(getProductList.fulfilled, (state, action) => {
+      state.loading = false;
+      state.productList = action.payload.data;
+      state.totalPageNum = action.payload.totalPageNum;
+    });
+    builder.addCase(getProductList.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
     });
   },
 });

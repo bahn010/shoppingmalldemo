@@ -17,33 +17,7 @@ class CloudinaryUploadWidget extends Component {
       return;
     }
 
-    // Cloudinary 스크립트가 이미 로드되었는지 확인
-    if (window.cloudinaryLoaded && window.cloudinary) {
-      this.initializeWidget();
-    } else {
-      // 스크립트 로딩 이벤트를 기다림
-      window.addEventListener('cloudinaryLoaded', this.initializeWidget);
-      // 백업: 일정 시간 후에도 로드되지 않으면 재시도
-      setTimeout(() => {
-        if (window.cloudinary) {
-          this.initializeWidget();
-        }
-      }, 2000);
-    }
-  }
-
-  componentWillUnmount() {
-    // 이벤트 리스너 정리
-    window.removeEventListener('cloudinaryLoaded', this.initializeWidget);
-  }
-
-  initializeWidget = () => {
     try {
-      if (!window.cloudinary) {
-        console.error("Cloudinary 스크립트가 로드되지 않았습니다.");
-        return;
-      }
-
       var myWidget = window.cloudinary.createUploadWidget(
         {
           cloudName: CLOUDNAME,
@@ -76,7 +50,7 @@ class CloudinaryUploadWidget extends Component {
     } catch (error) {
       console.error("Cloudinary 위젯 초기화 오류:", error);
     }
-  };
+  }
 
   render() {
     // 환경변수가 없으면 업로드 버튼을 비활성화
