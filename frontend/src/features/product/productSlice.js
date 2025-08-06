@@ -11,9 +11,9 @@ export const getProductList = createAsyncThunk(
       if (response.status !== 200) {
         throw new Error(response.data.error);
       }
-      return response.data.data;
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -98,6 +98,7 @@ const productSlice = createSlice({
       state.loading = false;
       state.productList = action.payload.data;
       state.totalPageNum = action.payload.pagination.totalPages;
+      state.error = "";
     });
     builder.addCase(getProductList.rejected, (state, action) => {
       state.loading = false;

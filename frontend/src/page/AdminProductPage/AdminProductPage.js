@@ -45,7 +45,7 @@ const AdminProductPage = () => {
     //검색어나 페이지가 바뀌면 url바꿔주기 (검색어또는 페이지가 바뀜 => url 바꿔줌=> url쿼리 읽어옴=> 이 쿼리값 맞춰서  상품리스트 가져오기)
     navigate(`?page=${searchQuery.page}&name=${searchQuery.name}`);
     dispatch(getProductList(searchQuery));
-  }, [searchQuery, navigate, dispatch]);
+  }, [searchQuery.page, searchQuery.name, navigate, dispatch]);
 
   const deleteItem = (id) => {
     //아이템 삭제하기
@@ -66,7 +66,6 @@ const AdminProductPage = () => {
 
   const handlePageClick = ({ selected }) => {
     setSearchQuery((prev) => ({ ...prev, page: selected + 1 }));
-    //  쿼리에 페이지값 바꿔주기
   };
 
   return (
@@ -90,27 +89,29 @@ const AdminProductPage = () => {
           deleteItem={deleteItem}
           openEditForm={openEditForm}
         />
-        <ReactPaginate
-          nextLabel="next >"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={5}
-          pageCount={totalPageNum}
-          forcePage={searchQuery.page - 1}
-          previousLabel="< previous"
-          renderOnZeroPageCount={null}
-          pageClassName="page-item"
-          pageLinkClassName="page-link"
-          previousClassName="page-item"
-          previousLinkClassName="page-link"
-          nextClassName="page-item"
-          nextLinkClassName="page-link"
-          breakLabel="..."
-          breakClassName="page-item"
-          breakLinkClassName="page-link"
-          containerClassName="pagination"
-          activeClassName="active"
-          className="display-center list-style-none"
-        />
+        {totalPageNum > 1 && (
+          <ReactPaginate
+            nextLabel="next >"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={5}
+            pageCount={totalPageNum}
+            forcePage={searchQuery.page - 1}
+            previousLabel="< previous"
+            renderOnZeroPageCount={null}
+            pageClassName="page-item"
+            pageLinkClassName="page-link"
+            previousClassName="page-item"
+            previousLinkClassName="page-link"
+            nextClassName="page-item"
+            nextLinkClassName="page-link"
+            breakLabel="..."
+            breakClassName="page-item"
+            breakLinkClassName="page-link"
+            containerClassName="pagination"
+            activeClassName="active"
+            className="display-center list-style-none"
+          />
+        )}
       </Container>
 
       <NewItemDialog
