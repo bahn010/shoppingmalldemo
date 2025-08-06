@@ -5,4 +5,7 @@ const authController = require("../controller/auth.controller")
 
 router.post("/", authController.authenticateToken, authController.checkAdminPermission, productController.createProduct)
 
+router.get("/", productController.getProduct)
+
+
 module.exports = router

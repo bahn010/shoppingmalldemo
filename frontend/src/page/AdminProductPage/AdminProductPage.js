@@ -89,7 +89,7 @@ const AdminProductPage = () => {
           deleteItem={deleteItem}
           openEditForm={openEditForm}
         />
-        {totalPageNum > 1 && (
+        {totalPageNum > 1 &&  (
           <ReactPaginate
             nextLabel="next >"
             onPageChange={handlePageClick}
