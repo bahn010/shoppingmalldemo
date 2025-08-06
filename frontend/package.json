@@ -45,6 +45,7 @@
       "react-app/jest"
     ]
   },
+  "proxy": "http://shoppingmalldemo.ap-northeast-2.elasticbeanstalk.com",
   "browserslist": {
     "production": [
       ">0.2%",
