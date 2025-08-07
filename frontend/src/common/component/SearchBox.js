@@ -7,14 +7,23 @@ const SearchBox = ({ searchQuery, setSearchQuery, placeholder, field }) => {
   const [query] = useSearchParams();
   const [keyword, setKeyword] = useState(query.get(field) || "");
 
+  const handleSearch = () => {
+    setSearchQuery({ ...searchQuery, page: 1, [field]: keyword });
+  };
+
   const onCheckEnter = (event) => {
     if (event.key === "Enter") {
-      setSearchQuery({ ...searchQuery, page: 1, [field]: event.target.value });
+      handleSearch();
     }
   };
+
   return (
     <div className="search-box">
-      <FontAwesomeIcon icon={faSearch} />
+      <FontAwesomeIcon 
+        icon={faSearch} 
+        onClick={handleSearch}
+        style={{ cursor: "pointer" }}
+      />
       <input
         type="text"
         placeholder={placeholder}

@@ -6,6 +6,7 @@ import {
   faBox,
   faSearch,
   faShoppingBag,
+  faCog,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -75,9 +76,10 @@ const Navbar = ({ user }) => {
         </div>
       </div>
       {user && user.level === "admin" && (
-        <Link to="/admin/product?page=1" className="link-area">
-          Admin page
-        </Link>
+        <div onClick={() => navigate("/admin/product?page=1")} className="nav-icon">
+          <FontAwesomeIcon icon={faCog} />
+          {!isMobile && <span style={{ cursor: "pointer" }}>Admin page</span>}
+        </div>
       )}
       <div className="nav-header">
         <div className="burger-menu hide">
