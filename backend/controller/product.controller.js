@@ -13,17 +13,23 @@ productController.createProduct = async (req, res) => {
 }
 
 productController.getProduct = async (req, res) => {
+  const limit = 5;
   try {
-    console.log("🔍 GET /api/product 요청 받음");
-    console.log("📋 요청 쿼리:", req.query);
-    
-    const products = await Product.find({})
-    console.log("✅ 상품 조회 성공 - 총 상품 수:", products.length);
-    console.log("📦 조회된 상품들:", products.map(p => ({ id: p._id, name: p.name, price: p.price })));
-    
-    res.status(200).json({ status: "success", data: products })
+    const { page,name } = req.query
+
+    const cond = name? { name: { $regex: name, $options: "i" } } : {}
+    const query = Product.find(cond)
+    if (page) {
+      query.skip((page - 1) * limit).limit(limit)
+    }
+
+    const productList = await query.exec()
+    const totalCount = await Product.countDocuments(cond)
+    const totalPageNum = Math.ceil(totalCount / limit)
+    res.status(200).json({ status: "success", data: productList, totalPageNum })
+
   } catch (err) {
-    console.log("❌ 상품 조회 실패:", err.message);
+
     res.status(400).json({ status: "fail", error: err.message })
   }
 }
