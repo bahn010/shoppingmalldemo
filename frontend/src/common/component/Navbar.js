@@ -75,12 +75,6 @@ const Navbar = ({ user }) => {
           ))}
         </div>
       </div>
-      {user && user.level === "admin" && (
-        <div onClick={() => navigate("/admin/product?page=1")} className="nav-icon">
-          <FontAwesomeIcon icon={faCog} />
-          {!isMobile && <span style={{ cursor: "pointer" }}>Admin page</span>}
-        </div>
-      )}
       <div className="nav-header">
         <div className="burger-menu hide">
           <FontAwesomeIcon icon={faBars} onClick={() => setWidth(250)} />
@@ -116,6 +110,12 @@ const Navbar = ({ user }) => {
               <FontAwesomeIcon icon={faBox} />
               {!isMobile && <span style={{ cursor: "pointer" }}>내 주문</span>}
             </div>
+            {user && user.level === "admin" && (
+              <div onClick={() => navigate("/admin/product?page=1")} className="nav-icon">
+                <FontAwesomeIcon icon={faCog} />
+                {!isMobile && <span style={{ cursor: "pointer" }}>Admin page</span>}
+              </div>
+            )}
             {isMobile && (
               <div className="nav-icon" onClick={() => setShowSearchBox(true)}>
                 <FontAwesomeIcon icon={faSearch} />

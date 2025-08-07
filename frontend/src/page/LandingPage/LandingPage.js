@@ -4,6 +4,8 @@ import { Row, Col, Container } from "react-bootstrap";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ReactPaginate from "react-paginate";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight, faChevronsLeft, faChevronsRight } from "@fortawesome/free-solid-svg-icons";
 import { getProductList } from "../../features/product/productSlice";
 
 const LandingPage = () => {
@@ -55,12 +57,14 @@ const LandingPage = () => {
       
       {totalPageNum > 1 && productList.length > 0 && (
         <ReactPaginate
-          nextLabel="next >"
+          nextLabel={<FontAwesomeIcon icon={faChevronRight} />}
           onPageChange={handlePageClick}
           pageRangeDisplayed={5}
           pageCount={totalPageNum}
           forcePage={parseInt(page) - 1}
-          previousLabel="< previous"
+          previousLabel={<FontAwesomeIcon icon={faChevronLeft} />}
+          firstLabel={<FontAwesomeIcon icon={faChevronsLeft} />}
+          lastLabel={<FontAwesomeIcon icon={faChevronsRight} />}
           renderOnZeroPageCount={null}
           pageClassName="page-item"
           pageLinkClassName="page-link"
@@ -68,6 +72,10 @@ const LandingPage = () => {
           previousLinkClassName="page-link"
           nextClassName="page-item"
           nextLinkClassName="page-link"
+          firstClassName="page-item"
+          firstLinkClassName="page-link"
+          lastClassName="page-item"
+          lastLinkClassName="page-link"
           breakLabel="..."
           breakClassName="page-item"
           breakLinkClassName="page-link"
