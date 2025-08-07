@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight, faChevronsLeft, faChevronsRight } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faChevronRight, faAngleDoubleLeft, faAngleDoubleRight } from "@fortawesome/free-solid-svg-icons";
 import SearchBox from "../../common/component/SearchBox";
 import NewItemDialog from "./component/NewItemDialog";
 import ProductTable from "./component/ProductTable";
@@ -102,8 +102,8 @@ const AdminProductPage = () => {
             pageCount={totalPageNum}
             forcePage={searchQuery.page - 1}
             previousLabel={<FontAwesomeIcon icon={faChevronLeft} />}
-            firstLabel={<FontAwesomeIcon icon={faChevronsLeft} />}
-            lastLabel={<FontAwesomeIcon icon={faChevronsRight} />}
+            firstLabel={<FontAwesomeIcon icon={faAngleDoubleLeft} />}
+            lastLabel={<FontAwesomeIcon icon={faAngleDoubleRight} />}
             renderOnZeroPageCount={null}
             pageClassName="page-item"
             pageLinkClassName="page-link"

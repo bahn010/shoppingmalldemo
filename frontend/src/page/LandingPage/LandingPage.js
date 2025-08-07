@@ -5,7 +5,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ReactPaginate from "react-paginate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight, faChevronsLeft, faChevronsRight } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faChevronRight, faAngleDoubleLeft, faAngleDoubleRight } from "@fortawesome/free-solid-svg-icons";
 import { getProductList } from "../../features/product/productSlice";
 
 const LandingPage = () => {
@@ -63,8 +63,8 @@ const LandingPage = () => {
           pageCount={totalPageNum}
           forcePage={parseInt(page) - 1}
           previousLabel={<FontAwesomeIcon icon={faChevronLeft} />}
-          firstLabel={<FontAwesomeIcon icon={faChevronsLeft} />}
-          lastLabel={<FontAwesomeIcon icon={faChevronsRight} />}
+          firstLabel={<FontAwesomeIcon icon={faAngleDoubleLeft} />}
+          lastLabel={<FontAwesomeIcon icon={faAngleDoubleRight} />}
           renderOnZeroPageCount={null}
           pageClassName="page-item"
           pageLinkClassName="page-link"
