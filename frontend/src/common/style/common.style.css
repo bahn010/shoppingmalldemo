@@ -43,7 +43,6 @@
     height:100vh;
   }
 
-/* Modern Pagination Styles */
 .pagination {
     display: flex;
     justify-content: center;
@@ -65,52 +64,56 @@
     min-width: 40px;
     height: 40px;
     padding: 8px 12px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
     background-color: #ffffff;
-    color: #333333;
+    color: #6b7280;
     text-decoration: none;
     font-weight: 500;
     font-size: 14px;
     transition: all 0.2s ease;
     cursor: pointer;
+    opacity: 0.7;
 }
 
 .page-link:hover {
-    background-color: #f8f9fa;
-    border-color: #007bff;
-    color: #007bff;
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+    color: #374151;
     transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    opacity: 0.9;
 }
 
 .page-item.active .page-link {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: #374151;
+    border-color: #374151;
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(55, 65, 81, 0.2);
+    opacity: 1;
 }
 
 .page-item.active .page-link:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+    background-color: #1f2937;
+    border-color: #1f2937;
     transform: translateY(-1px);
 }
 
 .page-item.disabled .page-link {
-    background-color: #f8f9fa;
-    border-color: #e0e0e0;
-    color: #6c757d;
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    color: #9ca3af;
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
 .page-item.disabled .page-link:hover {
-    background-color: #f8f9fa;
-    border-color: #e0e0e0;
-    color: #6c757d;
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    color: #9ca3af;
     transform: none;
     box-shadow: none;
+    opacity: 0.4;
 }
 
 .break-label {
@@ -120,9 +123,10 @@
     min-width: 40px;
     height: 40px;
     padding: 8px 12px;
-    color: #6c757d;
+    color: #9ca3af;
     font-weight: 500;
     font-size: 14px;
+    opacity: 0.6;
 }
 
 /* Previous/Next buttons specific styles */
