@@ -17,6 +17,32 @@ class CloudinaryUploadWidget extends Component {
       return;
     }
 
+    // Cloudinary 스크립트 로딩을 기다림
+    this.waitForCloudinary();
+  }
+
+  waitForCloudinary = () => {
+    const maxAttempts = 20; // 더 많은 시도 횟수
+    let attempts = 0;
+
+    const checkCloudinary = () => {
+      attempts++;
+      
+      if (window.cloudinary && window.cloudinary.createUploadWidget) {
+        console.log("Cloudinary 스크립트 로딩 완료");
+        this.initializeWidget();
+      } else if (attempts < maxAttempts) {
+        console.log(`Cloudinary 스크립트 로딩 대기 중... (${attempts}/${maxAttempts})`);
+        setTimeout(checkCloudinary, 300); // 더 짧은 간격
+      } else {
+        console.error("Cloudinary 스크립트 로딩 실패 - 브라우저 새로고침을 시도해보세요");
+      }
+    };
+
+    checkCloudinary();
+  };
+
+  initializeWidget = () => {
     try {
       var myWidget = window.cloudinary.createUploadWidget(
         {
@@ -50,7 +76,7 @@ class CloudinaryUploadWidget extends Component {
     } catch (error) {
       console.error("Cloudinary 위젯 초기화 오류:", error);
     }
-  }
+  };
 
   render() {
     // 환경변수가 없으면 업로드 버튼을 비활성화
