@@ -93,6 +93,7 @@ const AdminProductPage = () => {
           data={productList}
           deleteItem={deleteItem}
           openEditForm={openEditForm}
+          searchQuery={searchQuery}
         />
         {totalPageNum > 1 && productList.length > 0 && (
           <ReactPaginate

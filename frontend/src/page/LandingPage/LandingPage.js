@@ -40,15 +40,15 @@ const LandingPage = () => {
   // 로딩 중일 때 로딩 스피너 표시
   if (loading) {
     return (
-      <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: "400px" }}>
+      <Container className="display-center" style={{ minHeight: "400px" }}>
         <ColorRing
           visible={true}
-          height="80"
-          width="80"
-          ariaLabel="blocks-loading"
+          height="60"
+          width="60"
+          ariaLabel="loading"
           wrapperStyle={{}}
-          wrapperClass="blocks-wrapper"
-          colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+          wrapperClass=""
+          colors={["#6b7280", "#9ca3af", "#d1d5db", "#e5e7eb", "#f3f4f6"]}
         />
       </Container>
     );
@@ -64,12 +64,15 @@ const LandingPage = () => {
             </Col>
           ))
         ) : (
-          <div className="text-align-center empty-bag">
+          <div className="text-center" style={{ padding: "50px 0" }}>
             {name === "" ? (
-              <h2></h2>
+              <h3></h3>
             ) : (
-              <h2></h2>
+              <h3>일치하는 상품이 없습니다</h3>
             )}
+            <p className="text-muted">
+              {name === "" ? "새로운 상품을 기다려주세요." : "검색 조건을 변경해보세요."}
+            </p>
           </div>
         )}
       </Row>

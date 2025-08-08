@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import { currencyFormat } from "../../../utils/number";
 
-const ProductTable = ({ header, data, deleteItem, openEditForm }) => {
+const ProductTable = ({ header, data, deleteItem, openEditForm, searchQuery }) => {
   return (
     <div className="overflow-x">
       <Table striped bordered hover>
@@ -49,7 +49,21 @@ const ProductTable = ({ header, data, deleteItem, openEditForm }) => {
               </tr>
             ))
           ) : (
-            <tr>No Data to show</tr>
+            <tr>
+              <td colSpan={header.length} className="text-center" style={{ padding: "50px 0" }}>
+                {searchQuery && searchQuery.name ? (
+                  <>
+                    <h5>일치하는 상품이 없습니다</h5>
+                    <p className="text-muted mb-0">검색 조건을 변경해보세요.</p>
+                  </>
+                ) : (
+                  <>
+                    <h5>등록된 상품이 없습니다</h5>
+                    <p className="text-muted mb-0">새로운 상품을 등록해보세요.</p>
+                  </>
+                )}
+              </td>
+            </tr>
           )}
         </tbody>
       </Table>
