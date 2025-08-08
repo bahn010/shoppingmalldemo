@@ -34,6 +34,21 @@ productController.getProduct = async (req, res) => {
   }
 }
 
+productController.getProductById = async (req, res) => {
+  try {
+    const productId = req.params.id
+    const product = await Product.findById(productId)
+    
+    if (!product) {
+      return res.status(404).json({ status: "fail", error: "제품을 찾을 수 없습니다." })
+    }
+    
+    res.status(200).json({ status: "success", data: product })
+  } catch (err) {
+    res.status(400).json({ status: "fail", error: err.message })
+  }
+}
+
 productController.updateProduct = async (req, res) => {
   try {
     const productId = req.params.id
