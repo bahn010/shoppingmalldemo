@@ -20,7 +20,19 @@ const LandingPage = () => {
   const name = query.get("name") || "";
   const page = query.get("page") || 1;
 
+  // 새로고침 시 메인페이지로 이동
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // 검색 조건이 있으면 새로고침 시 메인페이지로 이동
+      if (name || page !== 1) {
+        // 새로고침 감지 시 메인페이지로 리다이렉트
+        window.location.href = "/";
+      }
+    };
 
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [name, page]);
 
   useEffect(() => {
     dispatch(

@@ -27,7 +27,19 @@ const AdminProductPage = () => {
 
   const [mode, setMode] = useState("new");
 
+  // 새로고침 시 메인페이지로 이동
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // 검색 조건이 있으면 새로고침 시 메인페이지로 이동
+      if (searchQuery.name || searchQuery.page !== 1) {
+        // 새로고침 감지 시 메인페이지로 리다이렉트
+        window.location.href = "/";
+      }
+    };
 
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [searchQuery.name, searchQuery.page]);
 
   const tableHeader = [
     "#",
