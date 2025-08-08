@@ -37,10 +37,10 @@ productController.getProduct = async (req, res) => {
 productController.updateProduct = async (req, res) => {
   try {
     const productId = req.params.id
-    const {sku, name, size, description, stock, image, price, category, status } = req.body
+    const {sku, name, description, stock, image, price, category, status } = req.body
     const product = await Product.findByIdAndUpdate(
       {_id: productId},
-      { sku, name, size, description, stock, image, price, category, status },
+      { sku, name, description, stock, image, price, category, status },
       { new: true }
     )
     res.status(200).json({ status: "success", data: product })

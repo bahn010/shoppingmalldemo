@@ -25,7 +25,7 @@ export const getProductDetail = createAsyncThunk(
 
 export const createProduct = createAsyncThunk(
   "products/createProduct",
-  async (formData, { dispatch, rejectWithValue }) => {
+  async ({ formData, searchQuery = {} }, { dispatch, rejectWithValue }) => {
     try {
       const response = await api.post("/product", formData);
       if (response.status !== 200) {
@@ -36,8 +36,8 @@ export const createProduct = createAsyncThunk(
         message: "상품이 성공적으로 생성되었습니다.",
         status: "success",
       }));
-      // 상품 목록 새로고침
-      dispatch(getProductList());
+      // 상품 목록 새로고침 (현재 검색 조건 유지)
+      dispatch(getProductList(searchQuery));
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -47,12 +47,46 @@ export const createProduct = createAsyncThunk(
 
 export const deleteProduct = createAsyncThunk(
   "products/deleteProduct",
-  async (id, { dispatch, rejectWithValue }) => {}
+  async ({ id, searchQuery = {} }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/product/${id}`);
+      if (response.status !== 200) {
+        throw new Error(response.data.error);
+      }
+      // 토스트 메시지 띄우기
+      dispatch(showToastMessage({
+        message: "상품이 성공적으로 삭제되었습니다.",
+        status: "success",
+      }));
+      // 상품 목록 새로고침 (현재 검색 조건 유지)
+      dispatch(getProductList(searchQuery));
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
 );
 
 export const editProduct = createAsyncThunk(
   "products/editProduct",
-  async ({ id, ...formData }, { dispatch, rejectWithValue }) => {}
+  async ({ _id, searchQuery = {}, ...formData }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await api.put(`/product/${_id}`, formData);
+      if (response.status !== 200) {
+        throw new Error(response.data.error);
+      }
+      // 토스트 메시지 띄우기
+      dispatch(showToastMessage({
+        message: "상품이 성공적으로 수정되었습니다.",
+        status: "success",
+      }));
+      // 상품 목록 새로고침 (현재 검색 조건 유지)
+      dispatch(getProductList(searchQuery));
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
 );
 
 // 슬라이스 생성
@@ -87,6 +121,30 @@ const productSlice = createSlice({
       state.success = true;
     });
     builder.addCase(createProduct.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+      state.success = false;
+    });
+    builder.addCase(editProduct.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(editProduct.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+    });
+    builder.addCase(editProduct.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+      state.success = false;
+    });
+    builder.addCase(deleteProduct.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(deleteProduct.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+    });
+    builder.addCase(deleteProduct.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
       state.success = false;

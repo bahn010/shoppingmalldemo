@@ -21,7 +21,7 @@ const InitialFormData = {
   price: 0,
 };
 
-const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
+const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
   const { error, success, selectedProduct } = useSelector(
     (state) => state.product
   );
@@ -77,10 +77,10 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
     if (mode === "new") {
       //새 상품 만들기
-      dispatch(createProduct({...formData, stock: stockObject}));
+      dispatch(createProduct({ formData: {...formData, stock: stockObject}, searchQuery }));
     } else {
       // 상품 수정하
-      dispatch(editProduct({...formData, stock: stockObject}));
+      dispatch(editProduct({...formData, stock: stockObject, searchQuery}));
     }
   };
 
