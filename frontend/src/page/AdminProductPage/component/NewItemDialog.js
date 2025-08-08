@@ -31,6 +31,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
   const [stock, setStock] = useState([]);
   const dispatch = useDispatch();
   const [stockError, setStockError] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (success) setShowDialog(false);
@@ -61,15 +62,26 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
     setFormData({ ...InitialFormData });
     setStock([]);
     setStockError(false);
+    setImageError(false);
     // 다이얼로그 닫아주기
     setShowDialog(false);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    
+    // 재고 유효성 검사
     if (stock.length === 0) {
-      return setStockError(true);
+      setStockError(true);
+      return;
     }
+    
+    // 이미지 유효성 검사
+    if (!formData.image || formData.image.trim() === "") {
+      setImageError(true);
+      return;
+    }
+    
     // 재고를 배열에서 객체로 바꿔주기
     const stockObject = stock.reduce((total,item) => {
       return {...total,[item[0]]:parseInt(item[1])}
@@ -136,15 +148,16 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
       ...formData,
       image: url,
     });
+    setImageError(false); // 이미지 업로드 시 에러 초기화
   };
 
   return (
     <Modal show={showDialog} onHide={handleClose}>
       <Modal.Header closeButton>
         {mode === "new" ? (
-          <Modal.Title>Create New Product</Modal.Title>
+          <Modal.Title>상품 생성</Modal.Title>
         ) : (
-          <Modal.Title>Edit Product</Modal.Title>
+          <Modal.Title>상품 수정</Modal.Title>
         )}
       </Modal.Header>
       {error && (
@@ -253,6 +266,9 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
 
         <Form.Group className="mb-3" controlId="Image" required>
           <Form.Label>Image</Form.Label>
+          {imageError && (
+            <span className="error-message">이미지를 선택해주세요</span>
+          )}
           <CloudinaryUploadWidget uploadImage={uploadImage} />
 
           <img
