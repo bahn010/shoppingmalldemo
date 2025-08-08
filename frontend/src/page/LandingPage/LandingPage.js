@@ -20,19 +20,27 @@ const LandingPage = () => {
   const name = query.get("name") || "";
   const page = query.get("page") || 1;
 
-  // 새로고침 시 메인페이지로 이동
+  // 새로고침 시 검색 조건 초기화
   useEffect(() => {
     const handleBeforeUnload = () => {
-      // 검색 조건이 있으면 새로고침 시 메인페이지로 이동
+      // 새로고침 시 검색 조건을 localStorage에 저장
       if (name || page !== 1) {
-        // 새로고침 감지 시 메인페이지로 리다이렉트
-        window.location.href = "/";
+        localStorage.setItem('wasSearching', 'true');
       }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [name, page]);
+
+  // 페이지 로드 시 이전에 검색 중이었다면 검색 조건 초기화
+  useEffect(() => {
+    const wasSearching = localStorage.getItem('wasSearching');
+    if (wasSearching === 'true') {
+      localStorage.removeItem('wasSearching');
+      navigate("/");
+    }
+  }, [navigate]);
 
   useEffect(() => {
     dispatch(
