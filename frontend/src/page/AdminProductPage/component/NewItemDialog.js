@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Form, Modal, Button, Row, Col, Alert } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import CloudinaryUploadWidget from "../../../utils/CloudinaryUploadWidget";
 import { CATEGORY, STATUS, SIZE } from "../../../constants/product.constants";
 import "../style/adminProduct.style.css";
@@ -31,11 +33,15 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
   const [stock, setStock] = useState([]);
   const dispatch = useDispatch();
   const [stockError, setStockError] = useState(false);
+  const [stockErrorMessage, setStockErrorMessage] = useState("");
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
-    if (success) setShowDialog(false);
-  }, [success]);
+    if (success) {
+      setShowDialog(false);
+      dispatch(clearError()); // success 상태도 함께 초기화
+    }
+  }, [success, dispatch]);
 
   useEffect(() => {
     if (error || !success) {
@@ -62,7 +68,10 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
     setFormData({ ...InitialFormData });
     setStock([]);
     setStockError(false);
+    setStockErrorMessage("");
     setImageError(false);
+    // success 상태도 초기화
+    dispatch(clearError());
     // 다이얼로그 닫아주기
     setShowDialog(false);
   };
@@ -73,6 +82,19 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
     // 재고 유효성 검사
     if (stock.length === 0) {
       setStockError(true);
+      setStockErrorMessage("재고를 추가해주세요.");
+      return;
+    }
+    
+    // 재고가 0 이하인지 확인
+    const hasInvalidStock = stock.some(item => {
+      const stockValue = parseInt(item[1]) || 0;
+      return stockValue < 0;
+    });
+    
+    if (hasInvalidStock) {
+      setStockError(true);
+      setStockErrorMessage("재고가 0 이하일 수 없습니다.");
       return;
     }
     
@@ -121,8 +143,16 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
 
   const handleStockChange = (value, index) => {
     const newStock = [...stock];
-    newStock[index][1] = value;
+    // 재고가 0 이하로 설정되지 않도록 제한
+    const stockValue = Math.max(0, parseInt(value) || 0);
+    newStock[index][1] = stockValue;
     setStock(newStock);
+    
+    // 재고가 유효한 값이면 에러 초기화
+    if (stockValue >= 0) {
+      setStockError(false);
+      setStockErrorMessage("");
+    }
   };
 
   const onHandleCategory = (event) => {
@@ -206,7 +236,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
         <Form.Group className="mb-3" controlId="stock">
           <Form.Label className="mr-1">Stock</Form.Label>
           {stockError && (
-            <span className="error-message">재고를 추가해주세요</span>
+            <span className="error-message">{stockErrorMessage}</span>
           )}
           <Button size="sm" onClick={addStock}>
             Add +
@@ -248,15 +278,17 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
                     placeholder="number of stock"
                     value={item[1]}
                     required
+                    min="0"
                   />
                 </Col>
                 <Col sm={2}>
                   <Button
-                    variant="danger"
+                    variant="outline-danger"
                     size="sm"
                     onClick={() => deleteStock(index)}
+                    style={{ border: '1px solid #dc3545', color: '#dc3545' }}
                   >
-                    -
+                    <FontAwesomeIcon icon={faTrash} />
                   </Button>
                 </Col>
               </Row>
@@ -324,11 +356,11 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
           </Form.Group>
         </Row>
         {mode === "new" ? (
-          <Button variant="primary" type="submit">
+          <Button variant="secondary" type="submit">
             Submit
           </Button>
         ) : (
-          <Button variant="primary" type="submit">
+          <Button variant="secondary" type="submit">
             Edit
           </Button>
         )}

@@ -107,7 +107,7 @@ const AdminProductPage = () => {
             field="name"
           />
         </div>
-        <Button className="mt-2 mb-2" onClick={handleClickNewItem}>
+        <Button className="mt-2 mb-2" onClick={handleClickNewItem} variant="secondary">
           Add New Item +
         </Button>
 

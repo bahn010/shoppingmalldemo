@@ -1,6 +1,8 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { currencyFormat } from "../../../utils/number";
 
 const ProductTable = ({ header, data, deleteItem, openEditForm, searchQuery }) => {
@@ -36,13 +38,14 @@ const ProductTable = ({ header, data, deleteItem, openEditForm, searchQuery }) =
                 <th style={{ minWidth: "100px" }}>
                   <Button
                     size="sm"
-                    variant="danger"
+                    variant="outline-danger"
                     onClick={() => deleteItem(item._id)}
                     className="mr-1"
+                    style={{ border: '1px solid #dc3545', color: '#dc3545' }}
                   >
-                    -
+                    <FontAwesomeIcon icon={faTrash} />
                   </Button>
-                  <Button size="sm" onClick={() => openEditForm(item)}>
+                  <Button size="sm" variant="secondary" onClick={() => openEditForm(item)}>
                     Edit
                   </Button>
                 </th>
