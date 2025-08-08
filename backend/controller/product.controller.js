@@ -34,4 +34,29 @@ productController.getProduct = async (req, res) => {
   }
 }
 
+productController.updateProduct = async (req, res) => {
+  try {
+    const productId = req.params.id
+    const {sku, name, size, description, stock, image, price, category, status } = req.body
+    const product = await Product.findByIdAndUpdate(
+      {_id: productId},
+      { sku, name, size, description, stock, image, price, category, status },
+      { new: true }
+    )
+    res.status(200).json({ status: "success", data: product })
+  } catch (err) {
+    res.status(400).json({ status: "fail", error: err.message })
+  }
+}
+
+productController.deleteProduct = async (req, res) => {
+  try {
+    const productId = req.params.id
+    await Product.findByIdAndDelete(productId)
+    res.status(200).json({ status: "success", message: "상품이 삭제되었습니다." })
+  } catch (err) {
+    res.status(400).json({ status: "fail", error: err.message })
+  }
+}
+
 module.exports = productController

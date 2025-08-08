@@ -7,5 +7,9 @@ router.post("/", authController.authenticateToken, authController.checkAdminPerm
 
 router.get("/", productController.getProduct)
 
+router.put("/:id", authController.authenticateToken, authController.checkAdminPermission, productController.updateProduct)
+
+router.delete("/:id", authController.authenticateToken, authController.checkAdminPermission, productController.deleteProduct)
+
 
 module.exports = router
