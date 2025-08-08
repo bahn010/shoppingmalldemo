@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ReactPaginate from "react-paginate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight, faAngleDoubleLeft, faAngleDoubleRight } from "@fortawesome/free-solid-svg-icons";
+import { ColorRing } from "react-loader-spinner";
 import { getProductList } from "../../features/product/productSlice";
 
 const LandingPage = () => {
@@ -15,6 +16,7 @@ const LandingPage = () => {
 
   const productList = useSelector((state) => state.product.productList);
   const totalPageNum = useSelector((state) => state.product.totalPageNum);
+  const loading = useSelector((state) => state.product.loading);
   const name = query.get("name") || "";
   const page = query.get("page") || 1;
 
@@ -34,6 +36,23 @@ const LandingPage = () => {
     searchParams.set("page", newPage);
     navigate(`?${searchParams.toString()}`);
   };
+
+  // 로딩 중일 때 로딩 스피너 표시
+  if (loading) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: "400px" }}>
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="blocks-loading"
+          wrapperStyle={{}}
+          wrapperClass="blocks-wrapper"
+          colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+        />
+      </Container>
+    );
+  }
 
   return (
     <Container>
