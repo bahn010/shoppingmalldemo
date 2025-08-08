@@ -27,14 +27,7 @@ const AdminProductPage = () => {
 
   const [mode, setMode] = useState("new");
 
-  // 페이지 로드 시 검색 조건이 있으면 초기화
-  useEffect(() => {
-    if (searchQuery.name) {
-      // 검색 조건이 있으면 초기화
-      setQuery({ page: "1" });
-      setSearchQuery({ page: 1, name: "" });
-    }
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
+
 
   const tableHeader = [
     "#",

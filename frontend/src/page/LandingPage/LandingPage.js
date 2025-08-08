@@ -20,13 +20,7 @@ const LandingPage = () => {
   const name = query.get("name") || "";
   const page = query.get("page") || 1;
 
-  // 페이지 로드 시 검색 조건이 있으면 초기화
-  useEffect(() => {
-    if (name) {
-      // 검색 조건이 있으면 초기화
-      setQuery({ page: "1" });
-    }
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
+
 
   useEffect(() => {
     dispatch(

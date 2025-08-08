@@ -113,7 +113,7 @@ const Navbar = ({ user }) => {
             {user && user.level === "admin" && (
               <div onClick={() => navigate("/admin/product?page=1")} className="nav-icon">
                 <FontAwesomeIcon icon={faCog} />
-                {!isMobile && <span style={{ cursor: "pointer" }}>Admin page</span>}
+                {!isMobile && <span style={{ cursor: "pointer" }}>Admin</span>}
               </div>
             )}
             {isMobile && (
