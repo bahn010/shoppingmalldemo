@@ -8,8 +8,14 @@ const ProductCard = ({ item }) => {
     navigate(`/product/${id}`);
   };
   return (
-    <div className="card" onClick={() => showProduct(item._id)}>
-      <img src={item?.image} alt={item?.image} />
+    <div 
+      className="card" 
+      onClick={() => showProduct(item._id)}
+      style={{ cursor: 'pointer', transition: 'transform 0.2s ease-in-out' }}
+      onMouseEnter={(e) => e.target.style.transform = 'scale(1.02)'}
+      onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+    >
+      <img src={item?.image} alt={item?.name} />
       <div>{item?.name}</div>
       <div>₩ {currencyFormat(item?.price)}</div>
     </div>
