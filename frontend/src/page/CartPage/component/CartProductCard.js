@@ -4,16 +4,24 @@ import { Row, Col, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch } from "react-redux";
 import { currencyFormat } from "../../../utils/number";
-import { updateQty, deleteCartItem } from "../../../features/cart/cartSlice";
+import { updateQty, deleteCartItem, getCartList } from "../../../features/cart/cartSlice";
 const CartProductCard = ({ item }) => {
   const dispatch = useDispatch();
 
-  const handleQtyChange = (id, value) => {
-    dispatch(updateQty({ id, value }));
+  const handleQtyChange = (productId, size, value) => {
+    dispatch(updateQty({ productId, size, quantity: parseInt(value) }))
+      .then(() => {
+        // 수량 변경 후 카트 목록 새로고침
+        dispatch(getCartList());
+      });
   };
 
-  const deleteCart = (id) => {
-    dispatch(deleteCartItem(id));
+  const deleteCart = (productId, size) => {
+    dispatch(deleteCartItem({ productId, size }))
+      .then(() => {
+        // 삭제 후 카트 목록 새로고침
+        dispatch(getCartList());
+      });
   };
 
   return (
@@ -29,7 +37,7 @@ const CartProductCard = ({ item }) => {
               <FontAwesomeIcon
                 icon={faTrash}
                 width={24}
-                onClick={() => deleteCart(item._id)}
+                onClick={() => deleteCart(item.productId._id, item.size)}
               />
             </button>
           </div>
@@ -38,15 +46,15 @@ const CartProductCard = ({ item }) => {
             <strong>₩ {currencyFormat(item.productId.price)}</strong>
           </div>
           <div>Size: {item.size}</div>
-          <div>Total: ₩ {currencyFormat(item.productId.price * item.qty)}</div>
+          <div>Total: ₩ {currencyFormat(item.productId.price * item.quantity)}</div>
           <div>
             Quantity:
             <Form.Select
               onChange={(event) =>
-                handleQtyChange(item._id, event.target.value)
+                handleQtyChange(item.productId._id, item.size, event.target.value)
               }
               required
-              defaultValue={item.qty}
+              defaultValue={item.quantity}
               className="qty-dropdown"
             >
               <option value={1}>1</option>

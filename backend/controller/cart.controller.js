@@ -8,11 +8,11 @@ cartController.createCart = async (req, res) => {
     const { productId, size, quantity } = req.body
     const userId = req.user._id
     
-    // 기존 카트가 있는지 확인
+
     let cart = await Cart.findOne({ userId })
     
     if (cart) {
-      // 이미 같은 상품과 사이즈가 있는지 확인
+
       const existingItem = cart.items.find(
         item => item.productId.toString() === productId && item.size === size
       )
