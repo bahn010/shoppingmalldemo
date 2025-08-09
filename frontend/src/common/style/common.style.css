@@ -220,45 +220,7 @@
     border-left: 4px solid #2563eb;
 }
 
-/* 커스텀 토스트 닫기 버튼 */
-.custom-toast-close {
-    background: rgba(0, 0, 0, 0.15) !important;
-    border: none !important;
-    border-radius: 4px !important;
-    color: rgba(255, 255, 255, 0.9) !important;
-    cursor: pointer !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 20px !important;
-    height: 20px !important;
-    margin-left: 8px !important;
-    flex-shrink: 0 !important;
-    transition: all 0.2s ease !important;
-    opacity: 0.8 !important;
-    outline: none !important;
-    z-index: 10000 !important;
-    position: relative !important;
-}
-
-.custom-toast-close:hover {
-    background: rgba(0, 0, 0, 0.25) !important;
-    opacity: 1 !important;
-    transform: scale(1.1) !important;
-}
-
-.custom-toast-close:focus {
-    outline: none !important;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
-}
-
-.custom-toast-close svg {
-    width: 12px !important;
-    height: 12px !important;
-    pointer-events: none !important;
-}
-
-/* 기본 react-toastify 닫기 버튼 완전히 숨기기 */
+/* 기본 react-toastify 닫기 버튼 숨기기 */
 .Toastify__close-button {
     display: none !important;
 }
@@ -298,24 +260,7 @@
     font-size: 10px;
 }
 
-.toast-content {
-    display: flex !important;
-    align-items: center !important;
-    line-height: 1.2 !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    width: 100% !important;
-    justify-content: space-between !important;
-    gap: 8px !important;
-}
-
-.toast-content span {
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    flex: 1 !important;
-}
+/* 토스트 기본 스타일 최소화 */
 
 
 @keyframes slideInLeft {
