@@ -13,7 +13,7 @@ const ToastMessage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   
-  // 커스텀 토스트 컨텐츠 생성 함수
+
   const createToastContent = (message, status) => {
     const icons = {
       success: faCheck,
@@ -32,7 +32,7 @@ const ToastMessage = () => {
     );
   };
 
-  // 페이지 이동 시 모든 토스트 제거
+
   useEffect(() => {
     toast.dismiss();
   }, [location.pathname]);
@@ -41,9 +41,9 @@ const ToastMessage = () => {
     if (toastMessage && toastMessage.message !== "" && toastMessage.status !== "") {
       const { message, status } = toastMessage;
       
-      // 커스텀 컨텐츠와 함께 토스트 표시
+
       toast[status](createToastContent(message, status), {
-        toastId: `${status}-${Date.now()}`, // 고유 ID 추가
+        toastId: `${status}-${Date.now()}`, 
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
