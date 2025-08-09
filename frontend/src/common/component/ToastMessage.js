@@ -27,6 +27,7 @@ const ToastMessage = () => {
       hideProgressBar={false}
       pauseOnHover={false}
       limit={1}
+      closeButton={false}
     />
   );
 };
