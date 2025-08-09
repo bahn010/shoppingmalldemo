@@ -226,17 +226,17 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
   };
 
   return (
-    <Modal show={showDialog} onHide={handleClose}>
-      <Modal.Header closeButton>
+    <Modal show={showDialog} onHide={handleClose} size="lg">
+      <Modal.Header closeButton style={{ backgroundColor: '#f8f9fa', borderBottom: '1px solid #dee2e6' }}>
         {mode === "new" ? (
-          <Modal.Title>상품 생성</Modal.Title>
+          <Modal.Title style={{ color: '#495057', fontWeight: '600' }}>상품 생성</Modal.Title>
         ) : (
-          <Modal.Title>상품 수정</Modal.Title>
+          <Modal.Title style={{ color: '#495057', fontWeight: '600' }}>상품 수정</Modal.Title>
         )}
       </Modal.Header>
       {error && (
-        <div className="error-message">
-          <Alert variant="danger">{error}</Alert>
+        <div style={{ padding: '15px 30px 0' }}>
+          <Alert variant="danger" style={{ border: '1px solid #f5c6cb', backgroundColor: '#f8d7da' }}>{error}</Alert>
         </div>
       )}
       <Form className="form-container" onSubmit={handleSubmit}>
@@ -254,17 +254,17 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
                 isValid={skuValidation.isValid && !skuValidation.isChecking}
               />
               {skuValidation.isChecking && (
-                <div className="position-absolute" style={{ right: '10px', top: '50%', transform: 'translateY(-50%)' }}>
-                  <Spinner animation="border" size="sm" />
+                <div className="sku-validation-icon">
+                  <Spinner animation="border" size="sm" className="spinner-border-sm" />
                 </div>
               )}
               {!skuValidation.isChecking && skuValidation.isValid && (
-                <div className="position-absolute" style={{ right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'green' }}>
+                <div className="sku-validation-icon validation-icon-success">
                   <FontAwesomeIcon icon={faCheck} />
                 </div>
               )}
               {!skuValidation.isChecking && skuValidation.isDuplicate && (
-                <div className="position-absolute" style={{ right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'red' }}>
+                <div className="sku-validation-icon validation-icon-error">
                   <FontAwesomeIcon icon={faTimes} />
                 </div>
               )}
@@ -311,60 +311,62 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
           {stockError && (
             <span className="error-message">{stockErrorMessage}</span>
           )}
-          <Button size="sm" onClick={addStock}>
+          <Button className="btn-add-stock" size="sm" onClick={addStock}>
             Add +
           </Button>
           <div className="mt-2">
             {stock.map((item, index) => (
-              <Row key={index}>
-                <Col sm={4}>
-                  <Form.Select
-                    onChange={(event) =>
-                      handleSizeChange(event.target.value, index)
-                    }
-                    required
-                    defaultValue={item[0] ? item[0].toLowerCase() : ""}
-                  >
-                    <option value="" disabled selected hidden>
-                      Please Choose...
-                    </option>
-                    {SIZE.map((item, index) => (
-                      <option
-                        inValid={true}
-                        value={item.toLowerCase()}
-                        disabled={stock.some(
-                          (size) => size[0] === item.toLowerCase()
-                        )}
-                        key={index}
-                      >
-                        {item}
+              <div key={index} className="stock-row">
+                <Row>
+                  <Col sm={4}>
+                    <Form.Select
+                      onChange={(event) =>
+                        handleSizeChange(event.target.value, index)
+                      }
+                      required
+                      defaultValue={item[0] ? item[0].toLowerCase() : ""}
+                    >
+                      <option value="" disabled selected hidden>
+                        Please Choose...
                       </option>
-                    ))}
-                  </Form.Select>
-                </Col>
-                <Col sm={6}>
-                  <Form.Control
-                    onChange={(event) =>
-                      handleStockChange(event.target.value, index)
-                    }
-                    type="number"
-                    placeholder="number of stock"
-                    value={item[1]}
-                    required
-                    min="0"
-                  />
-                </Col>
-                <Col sm={2}>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => deleteStock(index)}
-                    style={{ border: '1px solid #dc3545', color: '#dc3545' }}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </Button>
-                </Col>
-              </Row>
+                      {SIZE.map((item, index) => (
+                        <option
+                          inValid={true}
+                          value={item.toLowerCase()}
+                          disabled={stock.some(
+                            (size) => size[0] === item.toLowerCase()
+                          )}
+                          key={index}
+                        >
+                          {item}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Col>
+                  <Col sm={6}>
+                    <Form.Control
+                      onChange={(event) =>
+                        handleStockChange(event.target.value, index)
+                      }
+                      type="number"
+                      placeholder="number of stock"
+                      value={item[1]}
+                      required
+                      min="0"
+                    />
+                  </Col>
+                  <Col sm={2}>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => deleteStock(index)}
+                      style={{ border: '1px solid #dc3545', color: '#dc3545' }}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                  </Col>
+                </Row>
+              </div>
             ))}
           </div>
         </Form.Group>
@@ -372,16 +374,23 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
         <Form.Group className="mb-3" controlId="Image" required>
           <Form.Label>Image</Form.Label>
           {imageError && (
-            <span className="error-message">이미지를 선택해주세요</span>
+            <div className="error-message">이미지를 선택해주세요</div>
           )}
-          <CloudinaryUploadWidget uploadImage={uploadImage} />
-
-          <img
-            id="uploadedimage"
-            src={formData.image}
-            className="upload-image mt-2"
-            alt="uploadedimage"
-          ></img>
+          <div className="image-upload-section">
+            <CloudinaryUploadWidget uploadImage={uploadImage} />
+            {formData.image ? (
+              <img
+                id="uploadedimage"
+                src={formData.image}
+                className="upload-image"
+                alt="uploadedimage"
+              />
+            ) : (
+              <div className="upload-image-placeholder">
+                이미지를 업로드해주세요
+              </div>
+            )}
+          </div>
         </Form.Group>
 
         <Row className="mb-3">
@@ -428,23 +437,25 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
             </Form.Select>
           </Form.Group>
         </Row>
-        {mode === "new" ? (
-          <Button 
-            variant="secondary" 
-            type="submit"
-            disabled={skuValidation.isChecking || skuValidation.isDuplicate}
-          >
-            Submit
-          </Button>
-        ) : (
-          <Button 
-            variant="secondary" 
-            type="submit"
-            disabled={skuValidation.isChecking || skuValidation.isDuplicate}
-          >
-            Edit
-          </Button>
-        )}
+        <div className="d-flex justify-content-end">
+          {mode === "new" ? (
+            <Button 
+              className="btn-submit"
+              type="submit"
+              disabled={skuValidation.isChecking || skuValidation.isDuplicate}
+            >
+              Submit
+            </Button>
+          ) : (
+            <Button 
+              className="btn-submit"
+              type="submit"
+              disabled={skuValidation.isChecking || skuValidation.isDuplicate}
+            >
+              Edit
+            </Button>
+          )}
+        </div>
       </Form>
     </Modal>
   );

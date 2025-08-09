@@ -6,7 +6,7 @@ const User = require("../model/user")
 cartController.createCart = async (req, res) => {
   try {
     const { productId, size, quantity } = req.body
-    const userId = req.user._id
+    const userId = req.userID
     
 
     let cart = await Cart.findOne({ userId })
@@ -42,7 +42,7 @@ cartController.createCart = async (req, res) => {
 
 cartController.getCart = async (req, res) => {
   try {
-    const userId = req.user._id
+    const userId = req.userID
     const cart = await Cart.findOne({ userId }).populate({
       path: 'items.productId',
       model: 'Product'
@@ -56,7 +56,7 @@ cartController.getCart = async (req, res) => {
 cartController.updateCart = async (req, res) => {
   try {
     const { productId, size, quantity } = req.body
-    const userId = req.user._id
+    const userId = req.userID
     
     const cart = await Cart.findOne({ userId })
     if (!cart) {
@@ -89,7 +89,7 @@ cartController.updateCart = async (req, res) => {
 cartController.deleteCart = async (req, res) => {
   try {
     const { productId, size } = req.body
-    const userId = req.user._id
+    const userId = req.userID
     
     const cart = await Cart.findOne({ userId })
     if (!cart) {
@@ -116,7 +116,7 @@ cartController.deleteCart = async (req, res) => {
 // 전체 카트 삭제 (옵션)
 cartController.clearCart = async (req, res) => {
   try {
-    const userId = req.user._id
+    const userId = req.userID
     await Cart.findOneAndDelete({ userId })
     res.status(200).json({ status: "success", message: "Cart cleared successfully" })
   } catch (err) {

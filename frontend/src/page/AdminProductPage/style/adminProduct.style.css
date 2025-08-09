@@ -1,50 +1,235 @@
-.card-area{
-    margin-top:20px;
-}
-.admin-product-card{
-    border:1px solid red;
-
-}
-.tag{
-    margin-left:10px
+/* 카드 영역 */
+.card-area {
+    margin-top: 20px;
 }
 
-.display-flex{
-    display:flex;
+.admin-product-card {
+    border: 1px solid #6c757d;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.1);
+}
+
+.tag {
+    margin-left: 10px;
+    background-color: #6c757d;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+/* 레이아웃 */
+.display-flex {
+    display: flex;
     align-items: center;
 }
-.locate-center{
+
+.locate-center {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
 }
-.stock{
+
+.stock {
     margin-right: 10px;
 }
 
-
-.mt-2{
+.mt-2 {
     margin-top: 20px;
 }
 
-.form-container{
-    padding:20px
-}
-.mr-1{
-    margin-right: 10px;
-}
-
-.upload-image{
-    max-width: 458px;
-    width:100%
-}
-.display-center{
+.display-center {
     display: flex;
     justify-content: center;
 }
-.error-message{
-    color: red;
-    font-size: 10pt;
+
+/* 폼 컨테이너 */
+.form-container {
+    padding: 30px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.mr-1 {
+    margin-right: 10px;
+}
+
+/* 이미지 업로드 영역 */
+.image-upload-section {
+    background-color: #ffffff;
+    border: 2px dashed #6c757d;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 10px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.image-upload-section:hover {
+    border-color: #495057;
+}
+
+.upload-image {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+}
+
+.upload-image-placeholder {
+    color: #6c757d;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+/* 에러 메시지 */
+.error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
     padding-right: 10px;
+    font-weight: 500;
+}
+
+/* 버튼 스타일 개선 */
+.btn-add-stock {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+    font-size: 0.875rem;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-add-stock:hover {
+    background-color: #495057;
+    border-color: #495057;
+    transform: translateY(-1px);
+}
+
+/* 폼 라벨 */
+.form-label {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* 폼 컨트롤 */
+.form-control, .form-select {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 10px 12px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #6c757d;
+    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+}
+
+/* 재고 행 스타일 */
+.stock-row {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Submit 버튼 */
+.btn-submit {
+    background-color: #495057;
+    border-color: #495057;
+    color: white;
+    padding: 12px 30px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-submit:hover {
+    background-color: #343a40;
+    border-color: #343a40;
+    transform: translateY(-1px);
+}
+
+.btn-submit:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    opacity: 0.6;
+}
+
+/* Modal 스타일 개선 */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 20px 30px;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* 텍스트 영역 스타일 */
+.form-control[as="textarea"] {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* 카테고리 선택 스타일 */
+.form-control[as="select"][multiple] {
+    min-height: 120px;
+}
+
+/* SKU 검증 아이콘 스타일 */
+.sku-validation-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+/* 스피너 스타일 */
+.spinner-border-sm {
+    color: #6c757d;
+}
+
+/* 성공/에러 아이콘 */
+.validation-icon-success {
+    color: #28a745;
+}
+
+.validation-icon-error {
+    color: #dc3545;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 20px;
+    }
+    
+    .modal-header {
+        padding: 15px 20px;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .stock-row {
+        padding: 10px;
+    }
 }
