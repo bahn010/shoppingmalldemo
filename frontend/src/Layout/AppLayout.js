@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router";
 import { Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import Sidebar from "../common/component/Sidebar";
 import Navbar from "../common/component/Navbar";
 import ToastMessage from "../common/component/ToastMessage";
@@ -13,6 +14,12 @@ const AppLayout = ({ children }) => {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.user);
+  
+  // 페이지 이동 시 토스트 제거
+  useEffect(() => {
+    toast.dismiss();
+  }, [location.pathname]);
+  
   useEffect(() => {
     dispatch(loginWithToken());
   }, []);
