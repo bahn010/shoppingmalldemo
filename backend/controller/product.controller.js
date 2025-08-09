@@ -103,6 +103,39 @@ productController.updateProduct = async (req, res) => {
   }
 }
 
+productController.checkSkuDuplicate = async (req, res) => {
+  try {
+    const { sku } = req.query
+    const { productId } = req.query // 수정 모드일 때 현재 상품 ID 제외
+    
+    if (!sku || sku.trim() === '') {
+      return res.status(400).json({ 
+        status: "fail", 
+        error: "SKU를 입력해주세요." 
+      })
+    }
+
+    let query = { sku: sku.trim() }
+    
+    // 수정 모드일 때 현재 상품 제외
+    if (productId) {
+      query._id = { $ne: productId }
+    }
+
+    const existingProduct = await Product.findOne(query)
+    
+    res.status(200).json({ 
+      status: "success", 
+      data: { 
+        isDuplicate: !!existingProduct,
+        message: existingProduct ? "이미 사용 중인 SKU입니다." : "사용 가능한 SKU입니다."
+      }
+    })
+  } catch (err) {
+    res.status(400).json({ status: "fail", error: err.message })
+  }
+}
+
 productController.deleteProduct = async (req, res) => {
   try {
     const productId = req.params.id

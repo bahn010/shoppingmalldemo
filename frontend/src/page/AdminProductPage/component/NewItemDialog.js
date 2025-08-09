@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Form, Modal, Button, Row, Col, Alert } from "react-bootstrap";
+import React, { useState, useEffect, useCallback } from "react";
+import { Form, Modal, Button, Row, Col, Alert, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import CloudinaryUploadWidget from "../../../utils/CloudinaryUploadWidget";
 import { CATEGORY, STATUS, SIZE } from "../../../constants/product.constants";
 import "../style/adminProduct.style.css";
@@ -10,6 +10,8 @@ import {
   clearError,
   createProduct,
   editProduct,
+  checkSkuDuplicate,
+  clearSkuValidation,
 } from "../../../features/product/productSlice";
 
 const InitialFormData = {
@@ -24,7 +26,7 @@ const InitialFormData = {
 };
 
 const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
-  const { error, success, selectedProduct } = useSelector(
+  const { error, success, selectedProduct, skuValidation } = useSelector(
     (state) => state.product
   );
   const [formData, setFormData] = useState(
@@ -35,6 +37,28 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
   const [stockError, setStockError] = useState(false);
   const [stockErrorMessage, setStockErrorMessage] = useState("");
   const [imageError, setImageError] = useState(false);
+  
+  // SKU 검증 관련 상태
+  const [skuCheckTimeout, setSkuCheckTimeout] = useState(null);
+
+  // SKU 중복 검사를 debounce로 처리하는 함수
+  const debouncedSkuCheck = useCallback((sku) => {
+    if (skuCheckTimeout) {
+      clearTimeout(skuCheckTimeout);
+    }
+    
+    if (!sku || sku.trim() === '') {
+      dispatch(clearSkuValidation());
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      const productId = mode === "edit" ? selectedProduct?._id : null;
+      dispatch(checkSkuDuplicate({ sku: sku.trim(), productId }));
+    }, 500); // 500ms 후에 검사 실행
+
+    setSkuCheckTimeout(timeout);
+  }, [dispatch, mode, selectedProduct?._id, skuCheckTimeout]);
 
   useEffect(() => {
     if (success) {
@@ -48,6 +72,9 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
       dispatch(clearError());
     }
     if (showDialog) {
+      // SKU 검증 상태 초기화
+      dispatch(clearSkuValidation());
+      
       if (mode === "edit") {
         setFormData(selectedProduct);
         // 객체형태로 온 stock을  다시 배열로 세팅해주기
@@ -61,7 +88,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
         setStock([]);
       }
     }
-  }, [showDialog]);
+  }, [showDialog, dispatch, mode, selectedProduct]);
 
   const handleClose = () => {
     //모든걸 초기화시키고;
@@ -70,6 +97,13 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
     setStockError(false);
     setStockErrorMessage("");
     setImageError(false);
+    // SKU 검증 상태 초기화
+    dispatch(clearSkuValidation());
+    // timeout 정리
+    if (skuCheckTimeout) {
+      clearTimeout(skuCheckTimeout);
+      setSkuCheckTimeout(null);
+    }
     // success 상태도 초기화
     dispatch(clearError());
     // 다이얼로그 닫아주기
@@ -121,9 +155,13 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
   const handleChange = (event) => {
     const { id, value } = event.target;
     
-    // SKU 필드 변경 시 중복 에러 초기화
-    if (id === "sku" && error && error.includes("중복된 상품코드")) {
-      dispatch(clearError());
+    // SKU 필드 변경 시 중복 에러 초기화 및 실시간 검증
+    if (id === "sku") {
+      if (error && error.includes("중복된 상품코드")) {
+        dispatch(clearError());
+      }
+      // 실시간 SKU 중복 검사
+      debouncedSkuCheck(value);
     }
     
     setFormData({
@@ -205,18 +243,41 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
         <Row className="mb-3">
           <Form.Group as={Col} controlId="sku">
             <Form.Label>Sku</Form.Label>
-            <Form.Control
-              onChange={handleChange}
-              type="string"
-              placeholder="Enter Sku"
-              required
-              value={formData.sku}
-              isInvalid={error && error.includes("중복된 상품코드")}
-            />
+            <div className="position-relative">
+              <Form.Control
+                onChange={handleChange}
+                type="string"
+                placeholder="Enter Sku"
+                required
+                value={formData.sku}
+                isInvalid={(error && error.includes("중복된 상품코드")) || skuValidation.isDuplicate}
+                isValid={skuValidation.isValid && !skuValidation.isChecking}
+              />
+              {skuValidation.isChecking && (
+                <div className="position-absolute" style={{ right: '10px', top: '50%', transform: 'translateY(-50%)' }}>
+                  <Spinner animation="border" size="sm" />
+                </div>
+              )}
+              {!skuValidation.isChecking && skuValidation.isValid && (
+                <div className="position-absolute" style={{ right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'green' }}>
+                  <FontAwesomeIcon icon={faCheck} />
+                </div>
+              )}
+              {!skuValidation.isChecking && skuValidation.isDuplicate && (
+                <div className="position-absolute" style={{ right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'red' }}>
+                  <FontAwesomeIcon icon={faTimes} />
+                </div>
+              )}
+            </div>
             {error && error.includes("중복된 상품코드") && (
               <Form.Control.Feedback type="invalid">
                 {error}
               </Form.Control.Feedback>
+            )}
+            {skuValidation.message && (
+              <div className={`mt-1 small ${skuValidation.isDuplicate ? 'text-danger' : 'text-success'}`}>
+                {skuValidation.message}
+              </div>
             )}
           </Form.Group>
 
@@ -368,11 +429,19 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
           </Form.Group>
         </Row>
         {mode === "new" ? (
-          <Button variant="secondary" type="submit">
+          <Button 
+            variant="secondary" 
+            type="submit"
+            disabled={skuValidation.isChecking || skuValidation.isDuplicate}
+          >
             Submit
           </Button>
         ) : (
-          <Button variant="secondary" type="submit">
+          <Button 
+            variant="secondary" 
+            type="submit"
+            disabled={skuValidation.isChecking || skuValidation.isDuplicate}
+          >
             Edit
           </Button>
         )}

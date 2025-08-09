@@ -7,6 +7,8 @@ router.post("/", authController.authenticateToken, authController.checkAdminPerm
 
 router.get("/", productController.getProduct)
 
+router.get("/check-sku", productController.checkSkuDuplicate)
+
 router.get("/:id", productController.getProductById)
 
 router.put("/:id", authController.authenticateToken, authController.checkAdminPermission, productController.updateProduct)

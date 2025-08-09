@@ -99,6 +99,25 @@ export const editProduct = createAsyncThunk(
   }
 );
 
+export const checkSkuDuplicate = createAsyncThunk(
+  "products/checkSkuDuplicate",
+  async ({ sku, productId }, { rejectWithValue }) => {
+    try {
+      const params = { sku };
+      if (productId) {
+        params.productId = productId;
+      }
+      const response = await api.get("/product/check-sku", { params });
+      if (response.status !== 200) {
+        throw new Error(response.data.error);
+      }
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 // 슬라이스 생성
 const productSlice = createSlice({
   name: "products",
@@ -109,6 +128,12 @@ const productSlice = createSlice({
     error: "",
     totalPageNum: 1,
     success: false,
+    skuValidation: {
+      isChecking: false,
+      isDuplicate: false,
+      message: "",
+      isValid: false,
+    },
   },
   reducers: {
     setSelectedProduct: (state, action) => {
@@ -120,6 +145,14 @@ const productSlice = createSlice({
     clearError: (state) => {
       state.error = "";
       state.success = false;
+    },
+    clearSkuValidation: (state) => {
+      state.skuValidation = {
+        isChecking: false,
+        isDuplicate: false,
+        message: "",
+        isValid: false,
+      };
     },
   },
   extraReducers: (builder) => {
@@ -184,9 +217,24 @@ const productSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     });
+    builder.addCase(checkSkuDuplicate.pending, (state) => {
+      state.skuValidation.isChecking = true;
+    });
+    builder.addCase(checkSkuDuplicate.fulfilled, (state, action) => {
+      state.skuValidation.isChecking = false;
+      state.skuValidation.isDuplicate = action.payload.isDuplicate;
+      state.skuValidation.message = action.payload.message;
+      state.skuValidation.isValid = !action.payload.isDuplicate;
+    });
+    builder.addCase(checkSkuDuplicate.rejected, (state, action) => {
+      state.skuValidation.isChecking = false;
+      state.skuValidation.isDuplicate = false;
+      state.skuValidation.message = "SKU 검증 중 오류가 발생했습니다.";
+      state.skuValidation.isValid = false;
+    });
   },
 });
 
-export const { setSelectedProduct, setFilteredList, clearError } =
+export const { setSelectedProduct, setFilteredList, clearError, clearSkuValidation } =
   productSlice.actions;
 export default productSlice.reducer;
