@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +11,7 @@ import { clearToastMessage } from "../../features/common/uiSlice";
 const ToastMessage = () => {
   const { toastMessage } = useSelector((state) => state.ui);
   const dispatch = useDispatch();
+  const location = useLocation();
   
   // 커스텀 토스트 컨텐츠 생성 함수
   const createToastContent = (message, status) => {
@@ -29,6 +31,11 @@ const ToastMessage = () => {
       </div>
     );
   };
+
+  // 페이지 이동 시 모든 토스트 제거
+  useEffect(() => {
+    toast.dismiss();
+  }, [location.pathname]);
   
   useEffect(() => {
     if (toastMessage && toastMessage.message !== "" && toastMessage.status !== "") {
@@ -36,31 +43,36 @@ const ToastMessage = () => {
       
       // 커스텀 컨텐츠와 함께 토스트 표시
       toast[status](createToastContent(message, status), {
+        toastId: `${status}-${Date.now()}`, // 고유 ID 추가
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         autoClose: 4000,
+        closeButton: true, 
       });
       
-      // 토스트 메시지 표시 후 상태 초기화
+   
       dispatch(clearToastMessage());
     }
   }, [toastMessage, dispatch]);
   
   return (
     <ToastContainer
-      position="top-center"
+      position="top-left"
       autoClose={4000}
       hideProgressBar={false}
       newestOnTop={true}
-      closeOnClick
+      closeOnClick={true}
       rtl={false}
       pauseOnFocusLoss={false}
-      draggable
-      pauseOnHover
+      draggable={true}
+      pauseOnHover={true}
       theme="light"
       limit={3}
+      closeButton={true}
+      enableMultiContainer={false}
+      containerId="main-toast-container"
       toastClassName="custom-toast"
     />
   );

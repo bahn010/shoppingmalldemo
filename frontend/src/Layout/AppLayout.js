@@ -7,7 +7,6 @@ import Navbar from "../common/component/Navbar";
 import ToastMessage from "../common/component/ToastMessage";
 import { loginWithToken } from "../features/user/userSlice";
 import { getCartQty } from "../features/cart/cartSlice";
-import { clearToastMessage } from "../features/common/uiSlice";
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -22,11 +21,6 @@ const AppLayout = ({ children }) => {
       dispatch(getCartQty());
     }
   }, [user]);
-
-  // 페이지 이동 시 토스트 메시지 초기화
-  useEffect(() => {
-    dispatch(clearToastMessage());
-  }, [location.pathname, dispatch]);
   return (
     <div>
       <ToastMessage />
