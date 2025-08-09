@@ -13,12 +13,22 @@ const ToastMessage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   
-  const createToastContent = (message, status) => {
+  const createToastContent = (message, status, toastId) => {
     const icons = {
       success: faCheck,
       error: faTimes,
       warning: faExclamationTriangle,
       info: faInfoCircle
+    };
+
+    const handleCustomClose = (e) => {
+      e.stopPropagation();
+      toast.dismiss(toastId);
+      // 강제 제거도 시도
+      setTimeout(() => {
+        const toastElements = document.querySelectorAll(`[data-testid="${toastId}"]`);
+        toastElements.forEach(el => el.remove());
+      }, 50);
     };
 
     return (
@@ -27,6 +37,14 @@ const ToastMessage = () => {
           <FontAwesomeIcon icon={icons[status]} />
         </div>
         <span>{message}</span>
+        <button 
+          className="custom-toast-close" 
+          onClick={handleCustomClose}
+          type="button"
+          aria-label="Close"
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
       </div>
     );
   };
@@ -52,18 +70,18 @@ const ToastMessage = () => {
       
       dismissAllToasts();
       
-
       setTimeout(() => {
-        toast[status](createToastContent(message, status), {
-          toastId: `${status}-${Date.now()}`,
+        const toastId = `${status}-${Date.now()}`;
+        toast[status](createToastContent(message, status, toastId), {
+          toastId: toastId,
           position: "top-left",
           autoClose: 3000,
           hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false, //
+          closeOnClick: false, // 커스텀 버튼만 사용
+          pauseOnHover: false,
           draggable: false, 
           pauseOnFocusLoss: false,
-          closeButton: true,
+          closeButton: false, // 기본 닫기 버튼 비활성화
         });
       }, 150);
       
@@ -77,14 +95,14 @@ const ToastMessage = () => {
       autoClose={3000}
       hideProgressBar={false}
       newestOnTop={true}
-      closeOnClick={true}
+      closeOnClick={false}
       rtl={false}
       pauseOnFocusLoss={false}
       draggable={false}
       pauseOnHover={false}
       theme="light"
       limit={1}
-      closeButton={true}
+      closeButton={false}
       enableMultiContainer={false}
       containerId="main-toast-container"
       toastClassName="custom-toast"
