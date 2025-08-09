@@ -220,10 +220,7 @@
     border-left: 4px solid #2563eb;
 }
 
-/* 기본 react-toastify 닫기 버튼 숨기기 */
-.Toastify__close-button {
-    display: none !important;
-}
+/* 토스트 메시지 최적화 완료 - 닫기 버튼 없음 */
 
 .Toastify__progress-bar {
     height: 3px;
@@ -246,21 +243,7 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* 토스트 아이콘 스타일 */
-.toast-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    flex-shrink: 0;
-    font-size: 10px;
-}
-
-/* 토스트 기본 스타일 최소화 */
+/* 토스트 메시지 완전 최적화 - 아이콘 중복 제거 완료 */
 
 
 @keyframes slideInLeft {
