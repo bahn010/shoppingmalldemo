@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,7 +13,6 @@ const ToastMessage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   
-
   const createToastContent = (message, status) => {
     const icons = {
       success: faCheck,
@@ -32,44 +31,59 @@ const ToastMessage = () => {
     );
   };
 
+  // 모든 토스트 강제 제거 함수
+  const dismissAllToasts = useCallback(() => {
+    toast.dismiss();
+    // DOM에서 직접 제거 (강제)
+    setTimeout(() => {
+      const toastElements = document.querySelectorAll('.Toastify__toast-container .Toastify__toast');
+      toastElements.forEach(el => el.remove());
+    }, 100);
+  }, []);
+
 
   useEffect(() => {
-    toast.dismiss();
-  }, [location.pathname]);
+    dismissAllToasts();
+  }, [location.pathname, dismissAllToasts]);
   
   useEffect(() => {
     if (toastMessage && toastMessage.message !== "" && toastMessage.status !== "") {
       const { message, status } = toastMessage;
       
-
-      toast[status](createToastContent(message, status), {
-        toastId: `${status}-${Date.now()}`, 
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        autoClose: 4000,
-        closeButton: true, 
-      });
+      dismissAllToasts();
       
-   
+
+      setTimeout(() => {
+        toast[status](createToastContent(message, status), {
+          toastId: `${status}-${Date.now()}`,
+          position: "top-left",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false, //
+          draggable: false, 
+          pauseOnFocusLoss: false,
+          closeButton: true,
+        });
+      }, 150);
+      
       dispatch(clearToastMessage());
     }
-  }, [toastMessage, dispatch]);
+  }, [toastMessage, dispatch, dismissAllToasts]);
   
   return (
     <ToastContainer
       position="top-left"
-      autoClose={4000}
+      autoClose={3000}
       hideProgressBar={false}
       newestOnTop={true}
       closeOnClick={true}
       rtl={false}
       pauseOnFocusLoss={false}
-      draggable={true}
-      pauseOnHover={true}
+      draggable={false}
+      pauseOnHover={false}
       theme="light"
-      limit={3}
+      limit={1}
       closeButton={true}
       enableMultiContainer={false}
       containerId="main-toast-container"
