@@ -120,6 +120,12 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
 
   const handleChange = (event) => {
     const { id, value } = event.target;
+    
+    // SKU 필드 변경 시 중복 에러 초기화
+    if (id === "sku" && error && error.includes("중복된 상품코드")) {
+      dispatch(clearError());
+    }
+    
     setFormData({
       ...formData,
       [id]: value,
@@ -205,7 +211,13 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, searchQuery }) => {
               placeholder="Enter Sku"
               required
               value={formData.sku}
+              isInvalid={error && error.includes("중복된 상품코드")}
             />
+            {error && error.includes("중복된 상품코드") && (
+              <Form.Control.Feedback type="invalid">
+                {error}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
 
           <Form.Group as={Col} controlId="name">

@@ -4,10 +4,27 @@ const Product = require("../model/product")
 productController.createProduct = async (req, res) => {
   try {
     const { sku, name, description, stock, image, price, category, status } = req.body
+    
+    // SKU 중복 체크
+    const existingProduct = await Product.findOne({ sku: sku.trim() })
+    if (existingProduct) {
+      return res.status(400).json({ 
+        status: "fail", 
+        error: "중복된 상품코드가 존재합니다. 다른 SKU를 사용해주세요." 
+      })
+    }
+
     const product = new Product({ sku, name, description, stock, image, price, category, status })
     await product.save()
     res.status(200).json({ status: "success", data: product })
   } catch (err) {
+    // MongoDB 중복 키 에러 처리
+    if (err.code === 11000 && err.keyPattern && err.keyPattern.sku) {
+      return res.status(400).json({ 
+        status: "fail", 
+        error: "중복된 상품코드가 존재합니다. 다른 SKU를 사용해주세요." 
+      })
+    }
     res.status(400).json({ status: "fail", error: err.message })
   }
 }
@@ -53,6 +70,21 @@ productController.updateProduct = async (req, res) => {
   try {
     const productId = req.params.id
     const {sku, name, description, stock, image, price, category, status } = req.body
+    
+    // SKU 중복 체크 (현재 상품 제외)
+    if (sku) {
+      const existingProduct = await Product.findOne({ 
+        sku: sku.trim(), 
+        _id: { $ne: productId } 
+      })
+      if (existingProduct) {
+        return res.status(400).json({ 
+          status: "fail", 
+          error: "중복된 상품코드가 존재합니다. 다른 SKU를 사용해주세요." 
+        })
+      }
+    }
+
     const product = await Product.findByIdAndUpdate(
       {_id: productId},
       { sku, name, description, stock, image, price, category, status },
@@ -60,6 +92,13 @@ productController.updateProduct = async (req, res) => {
     )
     res.status(200).json({ status: "success", data: product })
   } catch (err) {
+    // MongoDB 중복 키 에러 처리
+    if (err.code === 11000 && err.keyPattern && err.keyPattern.sku) {
+      return res.status(400).json({ 
+        status: "fail", 
+        error: "중복된 상품코드가 존재합니다. 다른 SKU를 사용해주세요." 
+      })
+    }
     res.status(400).json({ status: "fail", error: err.message })
   }
 }

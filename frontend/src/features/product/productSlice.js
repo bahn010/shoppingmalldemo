@@ -132,7 +132,7 @@ const productSlice = createSlice({
     });
     builder.addCase(createProduct.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload?.error || action.payload || "상품 생성 중 오류가 발생했습니다.";
       state.success = false;
     });
     builder.addCase(editProduct.pending, (state) => {
@@ -144,7 +144,7 @@ const productSlice = createSlice({
     });
     builder.addCase(editProduct.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload?.error || action.payload || "상품 수정 중 오류가 발생했습니다.";
       state.success = false;
     });
     builder.addCase(deleteProduct.pending, (state) => {
