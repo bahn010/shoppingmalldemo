@@ -24,16 +24,19 @@ const ToastMessage = () => {
       toast.dismiss();
       
       // 토스트 표시 (텍스트만, 아이콘 중복 제거)
-      toast[status](message, {
-        position: "top-left",
+      const toastId = toast[status](message, {
         autoClose: 3000,
-        hideProgressBar: false,
         closeOnClick: false,
         pauseOnHover: false,
         draggable: false,
         pauseOnFocusLoss: false,
         closeButton: false,
       });
+      
+      // 백업 타이머: 3.5초 후 강제 제거 (혹시 autoClose가 작동하지 않을 경우)
+      setTimeout(() => {
+        toast.dismiss(toastId);
+      }, 3500);
       
       dispatch(clearToastMessage());
     }
@@ -53,6 +56,12 @@ const ToastMessage = () => {
       theme="light"
       limit={1}
       closeButton={false}
+      toastStyle={{
+        borderRadius: '8px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+      }}
     />
   );
 };
