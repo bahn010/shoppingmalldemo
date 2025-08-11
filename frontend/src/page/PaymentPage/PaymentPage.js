@@ -7,12 +7,11 @@ import PaymentForm from "./component/PaymentForm";
 import "./style/paymentPage.style.css";
 import { cc_expires_format } from "../../utils/number";
 import { createOrder, clearOrderNum } from "../../features/order/orderSlice";
-import { getCartList } from "../../features/cart/cartSlice";
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const { orderNum, loading } = useSelector((state) => state.order);
-  const { cartList, loading: cartLoading } = useSelector((state) => state.cart);
+  const { cartList } = useSelector((state) => state.cart);
   const [cardValue, setCardValue] = useState({
     cvc: "",
     expiry: "",
@@ -21,7 +20,6 @@ const PaymentPage = () => {
     number: "",
   });
   const navigate = useNavigate();
-  const [firstLoading, setFirstLoading] = useState(true);
   const [shipInfo, setShipInfo] = useState({
     firstName: "",
     lastName: "",
@@ -30,19 +28,6 @@ const PaymentPage = () => {
     city: "",
     zip: "",
   });
-
-  useEffect(() => {
-    // 컴포넌트 마운트 시 장바구니 데이터 로드
-    dispatch(getCartList());
-  }, [dispatch]);
-
-  useEffect(() => {
-    // 장바구니 데이터가 로드된 후 검증
-    if (!cartLoading && cartList.length === 0) {
-      alert("장바구니에 상품이 없습니다.");
-      navigate("/cart");
-    }
-  }, [cartList, cartLoading, navigate]);
 
   useEffect(() => {
     // 주문번호가 생성되면 주문완료 페이지로 이동
@@ -135,15 +120,6 @@ const PaymentPage = () => {
 
   // 장바구니에 상품이 없다면 장바구니 페이지로 이동
   if (!cartList || cartList.length === 0) {
-    if (cartLoading) {
-      return (
-        <Container>
-          <div className="text-center py-5">
-            <h3>장바구니 정보를 불러오는 중...</h3>
-          </div>
-        </Container>
-      );
-    }
     navigate("/cart");
     return null;
   }
@@ -284,7 +260,7 @@ const PaymentPage = () => {
                     variant="dark"
                     className="payment-button pay-button"
                     type="submit"
-                    disabled={loading || cartLoading}
+                    disabled={loading}
                   >
                     {loading ? "처리중..." : "결제하기"}
                   </Button>
