@@ -7,11 +7,12 @@ import PaymentForm from "./component/PaymentForm";
 import "./style/paymentPage.style.css";
 import { cc_expires_format } from "../../utils/number";
 import { createOrder, clearOrderNum } from "../../features/order/orderSlice";
+import { getCartList } from "../../features/cart/cartSlice";
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const { orderNum, loading } = useSelector((state) => state.order);
-  const { cartList } = useSelector((state) => state.cart);
+  const { cartList, loading: cartLoading } = useSelector((state) => state.cart);
   const [cardValue, setCardValue] = useState({
     cvc: "",
     expiry: "",
@@ -29,6 +30,19 @@ const PaymentPage = () => {
     city: "",
     zip: "",
   });
+
+  useEffect(() => {
+    // 컴포넌트 마운트 시 장바구니 데이터 로드
+    dispatch(getCartList());
+  }, [dispatch]);
+
+  useEffect(() => {
+    // 장바구니 데이터가 로드된 후 검증
+    if (!cartLoading && cartList.length === 0) {
+      alert("장바구니에 상품이 없습니다.");
+      navigate("/cart");
+    }
+  }, [cartList, cartLoading, navigate]);
 
   useEffect(() => {
     // 주문번호가 생성되면 주문완료 페이지로 이동
@@ -60,16 +74,28 @@ const PaymentPage = () => {
       return;
     }
 
+    // 장바구니 데이터 구조 확인 및 totalPrice 계산
+    let totalPrice = 0;
+    for (const item of cartList) {
+      if (!item.productId || !item.productId.price) {
+        console.error('상품 정보가 제대로 로드되지 않음:', item);
+        alert("상품 정보를 불러오는 중 오류가 발생했습니다. 장바구니를 다시 확인해주세요.");
+        return;
+      }
+      totalPrice += item.productId.price * item.quantity;
+    }
+
     try {
       // 주문 데이터 준비
       const orderData = {
         shippingAddress: `${shipInfo.address}, ${shipInfo.city} ${shipInfo.zip}`,
         contact: shipInfo.contact,
-        totalPrice: cartList.reduce((total, item) => total + (item.productId.price * item.quantity), 0)
+        totalPrice: totalPrice
       };
 
       console.log('전송할 주문 데이터:', orderData);
       console.log('장바구니 목록:', cartList);
+      console.log('계산된 총 가격:', totalPrice);
 
       // 주문 생성
       await dispatch(createOrder(orderData)).unwrap();
@@ -109,6 +135,15 @@ const PaymentPage = () => {
 
   // 장바구니에 상품이 없다면 장바구니 페이지로 이동
   if (!cartList || cartList.length === 0) {
+    if (cartLoading) {
+      return (
+        <Container>
+          <div className="text-center py-5">
+            <h3>장바구니 정보를 불러오는 중...</h3>
+          </div>
+        </Container>
+      );
+    }
     navigate("/cart");
     return null;
   }
@@ -249,7 +284,7 @@ const PaymentPage = () => {
                     variant="dark"
                     className="payment-button pay-button"
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || cartLoading}
                   >
                     {loading ? "처리중..." : "결제하기"}
                   </Button>

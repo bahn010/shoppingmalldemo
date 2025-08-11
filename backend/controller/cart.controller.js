@@ -50,7 +50,18 @@ cartController.getCart = async (req, res) => {
       path: 'items.productId',
       model: 'Product'
     })
-    res.status(200).json({ status: "success", cart })
+    
+    if (!cart) {
+      return res.status(200).json({ 
+        status: "success", 
+        cart: { items: [] } 
+      })
+    }
+    
+    res.status(200).json({ 
+      status: "success", 
+      cart: cart 
+    })
   } catch (err) {
     res.status(400).json({ status: "fail", message: err.message })
   }

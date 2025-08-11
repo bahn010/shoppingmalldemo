@@ -68,6 +68,14 @@ orderController.createOrder = async (req, res) => {
           message: `장바구니 아이템 ${i + 1}의 상품 가격을 찾을 수 없습니다.` 
         });
       }
+
+      if (!item.size) {
+        console.log(`장바구니 아이템 ${i}의 size가 없음:`, item);
+        return res.status(400).json({ 
+          success: false, 
+          message: `장바구니 아이템 ${i + 1}의 사이즈 정보가 없습니다.` 
+        });
+      }
     }
 
     // 주문 데이터 준비
@@ -86,11 +94,14 @@ orderController.createOrder = async (req, res) => {
     }
     
     console.log('생성할 주문 데이터:', orderData)
+    console.log('items 배열 길이:', orderData.items.length)
+    console.log('첫 번째 아이템:', orderData.items[0])
 
+    // 주문 생성
     const order = await Order.create(orderData)
     console.log('생성된 주문:', order)
-    
 
+    // 상품 재고 업데이트
     for (const item of cart.items) {
       const product = await Product.findById(item.productId._id);
       if (product && product.stock && product.stock[item.size]) {
@@ -99,7 +110,7 @@ orderController.createOrder = async (req, res) => {
       }
     }
     
-
+    // 장바구니 비우기
     await Cart.findOneAndUpdate(
       { userId },
       { $set: { items: [] } }

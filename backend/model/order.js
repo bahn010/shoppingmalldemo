@@ -6,7 +6,7 @@ const Product = require('./product');
 const orderSchema = new Schema({
   orderNum: {
     type: String,
-    required: true,
+    required: false,
     unique: true
   },
   shippingAddress: {
@@ -55,7 +55,7 @@ const orderSchema = new Schema({
 
 // 주문번호 자동 생성 미들웨어
 orderSchema.pre('save', async function(next) {
-  if (this.isNew && !this.orderNum) {
+  if (!this.orderNum) {
     // 현재 날짜 + 랜덤 숫자로 주문번호 생성
     const date = new Date();
     const year = date.getFullYear();

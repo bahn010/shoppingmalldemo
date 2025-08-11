@@ -130,10 +130,17 @@ const cartSlice = createSlice({
       .addCase(getCartList.fulfilled, (state, action) => {
         state.loading = false;
         state.error = "";
-        state.cartList = action.payload.cart?.items || [];
-        state.totalPrice = state.cartList.reduce(
-          (total, item) => total + (item.productId.price * item.quantity), 0
-        );
+        // 응답 데이터 구조 확인 및 안전한 접근
+        const cartItems = action.payload?.cart?.items || [];
+        state.cartList = cartItems;
+        
+        // totalPrice 계산 시 안전한 접근
+        state.totalPrice = cartItems.reduce((total, item) => {
+          if (item.productId && typeof item.productId.price === 'number' && typeof item.quantity === 'number') {
+            return total + (item.productId.price * item.quantity);
+          }
+          return total;
+        }, 0);
       })
       .addCase(getCartList.rejected, (state, action) => {
         state.loading = false;
@@ -149,10 +156,16 @@ const cartSlice = createSlice({
         state.error = "";
         // 로컬 상태 업데이트
         const updatedCart = action.payload.cart;
-        state.cartList = updatedCart?.items || [];
-        state.totalPrice = state.cartList.reduce(
-          (total, item) => total + (item.productId.price * item.quantity), 0
-        );
+        const cartItems = updatedCart?.items || [];
+        state.cartList = cartItems;
+        
+        // totalPrice 계산 시 안전한 접근
+        state.totalPrice = cartItems.reduce((total, item) => {
+          if (item.productId && typeof item.productId.price === 'number' && typeof item.quantity === 'number') {
+            return total + (item.productId.price * item.quantity);
+          }
+          return total;
+        }, 0);
       })
       .addCase(updateQty.rejected, (state, action) => {
         state.loading = false;
