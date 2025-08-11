@@ -10,12 +10,22 @@ orderController.createOrder = async (req, res) => {
     
     // 디버깅 로그 추가
     console.log('=== 주문 생성 디버깅 ===')
+    console.log('요청 헤더:', req.headers)
     console.log('요청된 userId:', userId)
     console.log('요청된 shippingAddress:', shippingAddress)
     console.log('요청된 contact:', contact)
     console.log('요청된 totalPrice:', totalPrice)
     console.log('req.userID 타입:', typeof req.userID)
     console.log('req.userID 값:', req.userID)
+    
+    // userId 검증 추가
+    if (!userId) {
+      console.log('userId가 없음:', userId)
+      return res.status(401).json({ 
+        success: false, 
+        message: "사용자 인증이 필요합니다." 
+      })
+    }
     
     const cart = await Cart.findOne({ userId }).populate({
       path: 'items.productId',
@@ -104,7 +114,21 @@ orderController.createOrder = async (req, res) => {
   } catch (error) {
     console.error('주문 생성 오류:', error)
     console.error('오류 스택:', error.stack)
-    res.status(400).json({ success: false, message: "주문 생성 중 오류가 발생했습니다." })
+    
+    // 더 구체적인 에러 메시지 제공
+    let errorMessage = "주문 생성 중 오류가 발생했습니다."
+    
+    if (error.name === 'ValidationError') {
+      errorMessage = "주문 데이터 검증에 실패했습니다."
+    } else if (error.name === 'CastError') {
+      errorMessage = "잘못된 데이터 형식입니다."
+    }
+    
+    res.status(400).json({ 
+      success: false, 
+      message: errorMessage,
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    })
   }
 }
 
