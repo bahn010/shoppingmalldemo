@@ -17,20 +17,38 @@ const ProductDetail = () => {
   const user = useSelector((state) => state.user.user);
   const navigate = useNavigate();
 
+ 
+  const isSoldOut = () => {
+    if (!selectedProduct?.stock || typeof selectedProduct.stock !== 'object') return false;
+
+    return Object.values(selectedProduct.stock).every(quantity => quantity <= 0);
+  };
+
+
+  const isSizeSoldOut = (sizeName) => {
+    if (!selectedProduct?.stock || !sizeName) return false;
+    return selectedProduct.stock[sizeName] <= 0;
+  };
+
   const addItemToCart = () => {
-    // 사이즈를 아직 선택안했다면 에러
+  
     if (size === "") {
       setSizeError(true);
       return;
     }
     
-    // 아직 로그인을 안한유저라면 로그인페이지로
+
+    if (isSizeSoldOut(size)) {
+      return;
+    }
+    
+
     if (!user) {
       navigate("/login");
       return;
     }
     
-    // 카트에 아이템 추가하기
+
     dispatch(addToCart({ 
       productId: selectedProduct._id, 
       size: size, 
@@ -39,7 +57,7 @@ const ProductDetail = () => {
   };
   
   const selectSize = (value) => {
-    // 사이즈 추가하기
+
     if (sizeError) setSizeError(false);
     setSize(value);
   };
@@ -70,8 +88,17 @@ const ProductDetail = () => {
         </Col>
         <Col className="product-info-area" sm={6}>
           <div className="product-info">{selectedProduct.name}</div>
-          <div className="product-info">
-            ₩ {currencyFormat(selectedProduct.price)}
+          <div className="product-info" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>₩ {currencyFormat(selectedProduct.price)}</span>
+            {isSoldOut() && (
+              <span style={{ 
+                color: '#6b7280', 
+                fontSize: '16px', 
+                fontWeight: '500' 
+              }}>
+                SOLD OUT
+              </span>
+            )}
           </div>
           <div className="product-info">{selectedProduct.description}</div>
 
@@ -108,8 +135,13 @@ const ProductDetail = () => {
           <div className="warning-message">
             {sizeError && "사이즈를 선택해주세요."}
           </div>
-          <Button variant="dark" className="add-button" onClick={addItemToCart}>
-            추가
+          <Button 
+            variant="dark" 
+            className="add-button" 
+            onClick={addItemToCart}
+            disabled={isSoldOut() || isSizeSoldOut(size)}
+          >
+            {isSoldOut() ? "품절" : "추가"}
           </Button>
         </Col>
       </Row>
