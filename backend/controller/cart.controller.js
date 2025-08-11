@@ -78,6 +78,20 @@ cartController.updateCart = async (req, res) => {
       // 수량이 0 이하면 아이템 제거
       cart.items.splice(itemIndex, 1)
     } else {
+      // 재고 확인
+      const product = await Product.findById(productId)
+      if (!product) {
+        return res.status(404).json({ status: "fail", message: "Product not found" })
+      }
+      
+      // 해당 사이즈의 재고 확인
+      if (!product.stock || !product.stock[size] || product.stock[size] < quantity) {
+        return res.status(400).json({ 
+          status: "fail", 
+          message: `재고가 부족합니다. (현재: ${product.stock?.[size] || 0}, 요청: ${quantity})` 
+        })
+      }
+      
       // 수량 업데이트
       cart.items[itemIndex].quantity = quantity
     }

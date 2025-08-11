@@ -14,6 +14,7 @@ orderController.createOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "장바구니가 비어있습니다." })
     }
 
+    // 주문 데이터 준비
     const orderData = {
       userId,
       shippingAddress,
@@ -28,8 +29,19 @@ orderController.createOrder = async (req, res) => {
       }))
     }
 
+    // 주문 생성
     const order = await Order.create(orderData)
     
+
+    for (const item of cart.items) {
+      const product = await Product.findById(item.productId._id);
+      if (product && product.stock && product.stock[item.size]) {
+        product.stock[item.size] -= item.quantity;
+        await product.save();
+      }
+    }
+    
+
     await Cart.findOneAndUpdate(
       { userId },
       { $set: { items: [] } }
