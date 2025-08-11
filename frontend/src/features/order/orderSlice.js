@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getCartQty } from "../cart/cartSlice";
+import { getCartQty, clearCart } from "../cart/cartSlice";
 import api from "../../utils/api";
 import { showToastMessage } from "../common/uiSlice";
 
@@ -20,6 +20,8 @@ export const createOrder = createAsyncThunk(
     try {
       const response = await api.post("/order/create", payload);
       if (response.data.success) {
+        // 주문 성공 후 장바구니 즉시 비우기
+        dispatch(clearCart());
         dispatch(showToastMessage({ status: "success", message: "주문이 성공적으로 생성되었습니다." }));
         return response.data.order;
       } else {

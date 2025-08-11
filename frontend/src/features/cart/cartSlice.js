@@ -109,6 +109,11 @@ const cartSlice = createSlice({
     initialCart: (state) => {
       state.cartItemTypes = 0;
     },
+    clearCart: (state) => {
+      state.cartList = [];
+      state.cartItemTypes = 0;
+      state.totalPrice = 0;
+    },
     // You can still add reducers here for non-async actions if necessary
   },
   extraReducers: (builder) => {
@@ -119,6 +124,21 @@ const cartSlice = createSlice({
       .addCase(addToCart.fulfilled, (state, action) => {
         state.loading = false;
         state.error = "";
+        // 장바구니에 새 아이템 추가
+        const newCart = action.payload.cart;
+        const cartItems = newCart?.items || [];
+        state.cartList = cartItems;
+        
+        // cartItemTypes 업데이트
+        state.cartItemTypes = cartItems.length;
+        
+        // totalPrice 계산
+        state.totalPrice = cartItems.reduce((total, item) => {
+          if (item.productId && typeof item.productId.price === 'number' && typeof item.quantity === 'number') {
+            return total + (item.productId.price * item.quantity);
+          }
+          return total;
+        }, 0);
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.loading = false;
@@ -159,6 +179,9 @@ const cartSlice = createSlice({
         const cartItems = updatedCart?.items || [];
         state.cartList = cartItems;
         
+        // cartItemTypes 업데이트
+        state.cartItemTypes = cartItems.length;
+        
         // totalPrice 계산 시 안전한 접근
         state.totalPrice = cartItems.reduce((total, item) => {
           if (item.productId && typeof item.productId.price === 'number' && typeof item.quantity === 'number') {
@@ -177,7 +200,22 @@ const cartSlice = createSlice({
       .addCase(deleteCartItem.fulfilled, (state, action) => {
         state.loading = false;
         state.error = "";
-        // getCartList를 다시 호출하여 최신 상태를 가져오도록 함
+        // 장바구니에서 해당 아이템 제거
+        const { productId, size } = action.meta.arg;
+        state.cartList = state.cartList.filter(
+          item => !(item.productId._id === productId && item.size === size)
+        );
+        
+        // cartItemTypes 업데이트
+        state.cartItemTypes = state.cartList.length;
+        
+        // totalPrice 재계산
+        state.totalPrice = state.cartList.reduce((total, item) => {
+          if (item.productId && typeof item.productId.price === 'number' && typeof item.quantity === 'number') {
+            return total + (item.productId.price * item.quantity);
+          }
+          return total;
+        }, 0);
       })
       .addCase(deleteCartItem.rejected, (state, action) => {
         state.loading = false;
@@ -193,4 +231,4 @@ const cartSlice = createSlice({
 });
 
 export default cartSlice.reducer;
-export const { initialCart } = cartSlice.actions;
+export const { initialCart, clearCart } = cartSlice.actions;
