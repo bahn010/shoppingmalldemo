@@ -31,6 +31,11 @@ const PaymentPage = () => {
   });
 
   useEffect(() => {
+    // PaymentPage 진입 시 이전 주문번호 초기화
+    dispatch(clearOrderNum());
+  }, [dispatch]);
+
+  useEffect(() => {
     // 주문번호가 생성되면 주문완료 페이지로 이동
     if (orderNum) {
       navigate("/order-complete");
