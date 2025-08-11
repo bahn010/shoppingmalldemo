@@ -68,10 +68,22 @@ const PaymentPage = () => {
         totalPrice: cartList.reduce((total, item) => total + (item.productId.price * item.quantity), 0)
       };
 
+      console.log('전송할 주문 데이터:', orderData);
+      console.log('장바구니 목록:', cartList);
+
       // 주문 생성
       await dispatch(createOrder(orderData)).unwrap();
     } catch (error) {
       console.error("주문 생성 실패:", error);
+      let errorMessage = "주문 생성 중 오류가 발생했습니다.";
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      alert(`주문 생성 실패: ${errorMessage}`);
     }
   };
 

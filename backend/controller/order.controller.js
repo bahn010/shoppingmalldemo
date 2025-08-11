@@ -1,7 +1,6 @@
 const orderController = {}
 const Order = require("../model/order")
 const Cart = require("../model/cart")
-const User = require("../model/user")
 const Product = require("../model/product")
 
 orderController.createOrder = async (req, res) => {
@@ -9,9 +8,56 @@ orderController.createOrder = async (req, res) => {
     const userId = req.userID
     const { shippingAddress, contact, totalPrice } = req.body
     
-    const cart = await Cart.findOne({ userId }).populate('items.productId')
+    // 디버깅 로그 추가
+    console.log('=== 주문 생성 디버깅 ===')
+    console.log('요청된 userId:', userId)
+    console.log('요청된 shippingAddress:', shippingAddress)
+    console.log('요청된 contact:', contact)
+    console.log('요청된 totalPrice:', totalPrice)
+    console.log('req.userID 타입:', typeof req.userID)
+    console.log('req.userID 값:', req.userID)
+    
+    const cart = await Cart.findOne({ userId }).populate({
+      path: 'items.productId',
+      model: 'Product',
+      select: '_id name price stock'
+    })
+    console.log('찾은 장바구니:', cart)
+    console.log('장바구니 아이템 수:', cart ? cart.items.length : '장바구니 없음')
+    
     if (!cart || cart.items.length === 0) {
+      console.log('장바구니가 비어있거나 존재하지 않음')
       return res.status(400).json({ success: false, message: "장바구니가 비어있습니다." })
+    }
+
+    // 장바구니 아이템 검증
+    for (let i = 0; i < cart.items.length; i++) {
+      const item = cart.items[i];
+      console.log(`장바구니 아이템 ${i}:`, item);
+      
+      if (!item.productId) {
+        console.log(`장바구니 아이템 ${i}의 productId가 없음:`, item);
+        return res.status(400).json({ 
+          success: false, 
+          message: `장바구니 아이템 ${i + 1}의 상품 정보를 찾을 수 없습니다.` 
+        });
+      }
+      
+      if (!item.productId._id) {
+        console.log(`장바구니 아이템 ${i}의 productId._id가 없음:`, item.productId);
+        return res.status(400).json({ 
+          success: false, 
+          message: `장바구니 아이템 ${i + 1}의 상품 ID를 찾을 수 없습니다.` 
+        });
+      }
+      
+      if (!item.productId.price) {
+        console.log(`장바구니 아이템 ${i}의 productId.price가 없음:`, item.productId);
+        return res.status(400).json({ 
+          success: false, 
+          message: `장바구니 아이템 ${i + 1}의 상품 가격을 찾을 수 없습니다.` 
+        });
+      }
     }
 
     // 주문 데이터 준비
@@ -28,9 +74,11 @@ orderController.createOrder = async (req, res) => {
         price: item.productId.price
       }))
     }
+    
+    console.log('생성할 주문 데이터:', orderData)
 
-    // 주문 생성
     const order = await Order.create(orderData)
+    console.log('생성된 주문:', order)
     
 
     for (const item of cart.items) {
@@ -55,6 +103,7 @@ orderController.createOrder = async (req, res) => {
 
   } catch (error) {
     console.error('주문 생성 오류:', error)
+    console.error('오류 스택:', error.stack)
     res.status(400).json({ success: false, message: "주문 생성 중 오류가 발생했습니다." })
   }
 }
