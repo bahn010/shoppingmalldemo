@@ -20,6 +20,7 @@ const PaymentPage = () => {
     number: "",
   });
   const navigate = useNavigate();
+  const [firstLoading, setFirstLoading] = useState(true);
   const [shipInfo, setShipInfo] = useState({
     firstName: "",
     lastName: "",
@@ -33,7 +34,7 @@ const PaymentPage = () => {
     // 주문번호가 생성되면 주문완료 페이지로 이동
     if (orderNum) {
       navigate("/order-complete");
-      dispatch(clearOrderNum()); // 주문번호 초기화
+      // dispatch(clearOrderNum()); // 주문번호 초기화 - OrderCompletePage에서 처리
     }
   }, [orderNum, navigate, dispatch]);
 
@@ -120,6 +121,15 @@ const PaymentPage = () => {
 
   // 장바구니에 상품이 없다면 장바구니 페이지로 이동
   if (!cartList || cartList.length === 0) {
+    if (firstLoading) {
+      return (
+        <Container>
+          <div className="text-center py-5">
+            <h3>장바구니 정보를 불러오는 중...</h3>
+          </div>
+        </Container>
+      );
+    }
     navigate("/cart");
     return null;
   }
