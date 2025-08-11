@@ -180,11 +180,12 @@
     font-size: 14px !important;
     font-weight: 500 !important;
     min-height: auto !important;
-    white-space: nowrap !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
     width: auto !important;
-    max-width: 100% !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    max-width: 600px !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -292,6 +293,9 @@
         padding: 10px 12px;
         font-size: 13px;
         border-radius: 6px;
+        max-width: calc(100vw - 48px);
+        white-space: normal;
+        word-wrap: break-word;
     }
     
     .toast-icon {
