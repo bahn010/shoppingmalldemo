@@ -36,20 +36,8 @@ api.interceptors.response.use(
     console.log("Response Error:", error);
     console.log("Error response data:", error.response?.data);
     
-    if (error.response && error.response.data) {
-      // 백엔드에서 보낸 에러 메시지가 있는 경우
-      if (typeof error.response.data === 'object' && error.response.data.message) {
-        return Promise.reject(new Error(error.response.data.message));
-      }
-      // 문자열로 직접 에러 메시지가 온 경우
-      if (typeof error.response.data === 'string') {
-        return Promise.reject(new Error(error.response.data));
-      }
-      return Promise.reject(new Error(error.response.data));
-    }
-    
-    // 네트워크 에러 등 기타 에러
-    return Promise.reject(new Error(error.message || "네트워크 오류가 발생했습니다."));
+    // 원래 error 객체를 그대로 반환하여 response 정보 유지
+    return Promise.reject(error);
   }
 );
 
