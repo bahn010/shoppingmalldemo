@@ -6,11 +6,12 @@ import OrderReceipt from "./component/OrderReceipt";
 import PaymentForm from "./component/PaymentForm";
 import "./style/paymentPage.style.css";
 import { cc_expires_format } from "../../utils/number";
-import { createOrder } from "../../features/order/orderSlice";
+import { createOrder, clearOrderNum } from "../../features/order/orderSlice";
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
-  const { orderNum } = useSelector((state) => state.order);
+  const { orderNum, loading } = useSelector((state) => state.order);
+  const { cartList } = useSelector((state) => state.cart);
   const [cardValue, setCardValue] = useState({
     cvc: "",
     expiry: "",
@@ -30,28 +31,76 @@ const PaymentPage = () => {
   });
 
   useEffect(() => {
-    // 오더번호를 받으면 어디로 갈까?
-  }, [orderNum]);
+    // 주문번호가 생성되면 주문완료 페이지로 이동
+    if (orderNum) {
+      navigate("/order-complete");
+      dispatch(clearOrderNum()); // 주문번호 초기화
+    }
+  }, [orderNum, navigate, dispatch]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // 오더 생성하기
+    
+    // 배송 정보와 결제 정보가 모두 입력되었는지 확인
+    if (!shipInfo.firstName || !shipInfo.lastName || !shipInfo.contact || 
+        !shipInfo.address || !shipInfo.city || !shipInfo.zip) {
+      alert("모든 배송 정보를 입력해주세요.");
+      return;
+    }
+
+    if (!cardValue.number || !cardValue.expiry || !cardValue.cvc || !cardValue.name) {
+      alert("모든 결제 정보를 입력해주세요.");
+      return;
+    }
+
+    // 장바구니에 상품이 있는지 확인
+    if (!cartList || cartList.length === 0) {
+      alert("장바구니에 상품이 없습니다.");
+      navigate("/cart");
+      return;
+    }
+
+    try {
+      // 주문 데이터 준비
+      const orderData = {
+        shippingAddress: `${shipInfo.address}, ${shipInfo.city} ${shipInfo.zip}`,
+        contact: shipInfo.contact,
+        totalPrice: cartList.reduce((total, item) => total + (item.productId.price * item.quantity), 0)
+      };
+
+      // 주문 생성
+      await dispatch(createOrder(orderData)).unwrap();
+    } catch (error) {
+      console.error("주문 생성 실패:", error);
+    }
   };
 
   const handleFormChange = (event) => {
-    //shipInfo에 값 넣어주기
+    const { name, value } = event.target;
+    setShipInfo(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handlePaymentInfoChange = (event) => {
-    //카드정보 넣어주기
+    const { name, value } = event.target;
+    setCardValue(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleInputFocus = (e) => {
     setCardValue({ ...cardValue, focus: e.target.name });
   };
-  // if (cartList?.length === 0) {
-  //   navigate("/cart");
-  // }// 주문할 아이템이 없다면 주문하기로 안넘어가게 막음
+
+  // 장바구니에 상품이 없다면 장바구니 페이지로 이동
+  if (!cartList || cartList.length === 0) {
+    navigate("/cart");
+    return null;
+  }
+
   return (
     <Container>
       <Row>
@@ -68,6 +117,7 @@ const PaymentPage = () => {
                       onChange={handleFormChange}
                       required
                       name="lastName"
+                      value={shipInfo.lastName}
                     />
                   </Form.Group>
 
@@ -78,6 +128,7 @@ const PaymentPage = () => {
                       onChange={handleFormChange}
                       required
                       name="firstName"
+                      value={shipInfo.firstName}
                     />
                   </Form.Group>
                 </Row>
@@ -89,6 +140,7 @@ const PaymentPage = () => {
                     onChange={handleFormChange}
                     required
                     name="contact"
+                    value={shipInfo.contact}
                   />
                 </Form.Group>
 
@@ -99,6 +151,7 @@ const PaymentPage = () => {
                     onChange={handleFormChange}
                     required
                     name="address"
+                    value={shipInfo.address}
                   />
                 </Form.Group>
 
@@ -109,6 +162,7 @@ const PaymentPage = () => {
                       onChange={handleFormChange}
                       required
                       name="city"
+                      value={shipInfo.city}
                     />
                   </Form.Group>
 
@@ -118,23 +172,76 @@ const PaymentPage = () => {
                       onChange={handleFormChange}
                       required
                       name="zip"
+                      value={shipInfo.zip}
                     />
                   </Form.Group>
                 </Row>
+
                 <div className="mobile-receipt-area">
                   {/* <OrderReceipt /> */}
                 </div>
                 <div>
                   <h2 className="payment-title">결제 정보</h2>
+                  <Row className="mb-3">
+                    <Form.Group as={Col} controlId="cardName">
+                      <Form.Label>카드 소유자명</Form.Label>
+                      <Form.Control
+                        type="text"
+                        onChange={handlePaymentInfoChange}
+                        required
+                        name="name"
+                        value={cardValue.name}
+                      />
+                    </Form.Group>
+                  </Row>
+                  <Row className="mb-3">
+                    <Form.Group as={Col} controlId="cardNumber">
+                      <Form.Label>카드 번호</Form.Label>
+                      <Form.Control
+                        type="text"
+                        onChange={handlePaymentInfoChange}
+                        required
+                        name="number"
+                        value={cardValue.number}
+                        placeholder="1234-5678-9012-3456"
+                      />
+                    </Form.Group>
+                  </Row>
+                  <Row className="mb-3">
+                    <Form.Group as={Col} controlId="cardExpiry">
+                      <Form.Label>만료일</Form.Label>
+                      <Form.Control
+                        type="text"
+                        onChange={handlePaymentInfoChange}
+                        required
+                        name="expiry"
+                        value={cardValue.expiry}
+                        placeholder="MM/YY"
+                      />
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="cardCvc">
+                      <Form.Label>CVC</Form.Label>
+                      <Form.Control
+                        type="text"
+                        onChange={handlePaymentInfoChange}
+                        required
+                        name="cvc"
+                        value={cardValue.cvc}
+                        placeholder="123"
+                      />
+                    </Form.Group>
+                  </Row>
                 </div>
-
-                <Button
-                  variant="dark"
-                  className="payment-button pay-button"
-                  type="submit"
-                >
-                  결제하기
-                </Button>
+                <div>
+                  <Button
+                    variant="dark"
+                    className="payment-button pay-button"
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? "처리중..." : "결제하기"}
+                  </Button>
+                </div>
               </Form>
             </div>
           </div>
