@@ -24,11 +24,17 @@ export const addToCart = createAsyncThunk(
       dispatch(getCartQty());
       return response.data;
     } catch (error) {
+      console.log("Cart error response:", error.response);
+      console.log("Cart error data:", error.response?.data);
+      
+      // 백엔드에서 반환하는 에러 메시지 사용
+      const errorMessage = error.response?.data?.message || "장바구니 추가 실패";
+      
       dispatch(showToastMessage({ 
-        message: error.response?.data?.message || "장바구니 추가 실패", 
+        message: errorMessage, 
         status: "error" 
       }));
-      return rejectWithValue(error.response?.data?.message);
+      return rejectWithValue(errorMessage);
     }
   }
 );
