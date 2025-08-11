@@ -18,8 +18,11 @@ cartController.createCart = async (req, res) => {
       )
       
       if (existingItem) {
-        // 기존 아이템의 수량 업데이트
-        existingItem.quantity += quantity
+        // 중복 상품인 경우 에러 메시지 반환
+        return res.status(400).json({ 
+          status: "fail", 
+          message: "이미 등록된 상품입니다. 카트에서 수량을 변경해주세요." 
+        })
       } else {
         // 새 아이템 추가
         cart.items.push({ productId, size, quantity })
