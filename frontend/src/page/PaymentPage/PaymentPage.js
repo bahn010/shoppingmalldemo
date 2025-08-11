@@ -31,15 +31,12 @@ const PaymentPage = () => {
   });
 
   useEffect(() => {
-    // PaymentPage 진입 시 이전 주문번호 초기화
     dispatch(clearOrderNum());
   }, [dispatch]);
 
   useEffect(() => {
-    // 주문번호가 생성되면 주문완료 페이지로 이동
     if (orderNum) {
       navigate("/order-complete");
-      // dispatch(clearOrderNum()); // 주문번호 초기화 - OrderCompletePage에서 처리
     }
   }, [orderNum, navigate, dispatch]);
 
@@ -58,14 +55,12 @@ const PaymentPage = () => {
       return;
     }
 
-    // 장바구니에 상품이 있는지 확인
     if (!cartList || cartList.length === 0) {
       alert("장바구니에 상품이 없습니다.");
       navigate("/cart");
       return;
     }
 
-    // 장바구니 데이터 구조 확인 및 totalPrice 계산
     let totalPrice = 0;
     for (const item of cartList) {
       if (!item.productId || !item.productId.price) {
@@ -77,7 +72,6 @@ const PaymentPage = () => {
     }
 
     try {
-      // 주문 데이터 준비
       const orderData = {
         shippingAddress: `${shipInfo.address}, ${shipInfo.city} ${shipInfo.zip}`,
         contact: shipInfo.contact,
@@ -88,7 +82,6 @@ const PaymentPage = () => {
       console.log('장바구니 목록:', cartList);
       console.log('계산된 총 가격:', totalPrice);
 
-      // 주문 생성
       await dispatch(createOrder(orderData)).unwrap();
     } catch (error) {
       console.error("주문 생성 실패:", error);
@@ -124,7 +117,6 @@ const PaymentPage = () => {
     setCardValue({ ...cardValue, focus: e.target.name });
   };
 
-  // 장바구니에 상품이 없다면 장바구니 페이지로 이동
   if (!cartList || cartList.length === 0) {
     if (firstLoading) {
       return (
