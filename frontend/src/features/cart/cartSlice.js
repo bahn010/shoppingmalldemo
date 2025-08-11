@@ -7,7 +7,7 @@ const initialState = {
   error: "",
   cartList: [],
   selectedItem: {},
-  cartItemCount: 0,
+  cartItemTypes: 0,
   totalPrice: 0,
 };
 
@@ -94,8 +94,8 @@ export const getCartQty = createAsyncThunk(
     try {
       const response = await api.get("/cart");
       const cart = response.data.cart;
-      const totalQty = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
-      return totalQty;
+      const itemCount = cart?.items?.length || 0;
+      return itemCount;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
@@ -107,7 +107,7 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     initialCart: (state) => {
-      state.cartItemCount = 0;
+      state.cartItemTypes = 0;
     },
     // You can still add reducers here for non-async actions if necessary
   },
@@ -171,10 +171,10 @@ const cartSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(getCartQty.fulfilled, (state, action) => {
-        state.cartItemCount = action.payload;
+        state.cartItemTypes = action.payload;
       })
       .addCase(getCartQty.rejected, (state, action) => {
-        state.cartItemCount = 0;
+        state.cartItemTypes = 0;
       });
   },
 });

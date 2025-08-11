@@ -15,7 +15,7 @@ import { logout } from "../../features/user/userSlice";
 
 const Navbar = ({ user }) => {
   const dispatch = useDispatch();
-  const { cartItemCount } = useSelector((state) => state.cart);
+  const { cartItemTypes } = useSelector((state) => state.cart);
   const isMobile = window.navigator.userAgent.indexOf("Mobile") !== -1;
   const [showSearchBox, setShowSearchBox] = useState(false);
   const menuList = [
@@ -99,7 +99,7 @@ const Navbar = ({ user }) => {
               <FontAwesomeIcon icon={faShoppingBag} />
               {!isMobile && (
                 <span style={{ cursor: "pointer" }}>{`쇼핑백(${
-                  cartItemCount || 0
+                  cartItemTypes || 0
                 })`}</span>
               )}
             </div>
@@ -116,7 +116,7 @@ const Navbar = ({ user }) => {
                 {!isMobile && <span style={{ cursor: "pointer" }}>Admin</span>}
               </div>
             )}
-            {isMobile && (
+            {isMobile && (  
               <div className="nav-icon" onClick={() => setShowSearchBox(true)}>
                 <FontAwesomeIcon icon={faSearch} />
               </div>
