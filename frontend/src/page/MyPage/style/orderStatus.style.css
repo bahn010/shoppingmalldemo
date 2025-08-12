@@ -18,8 +18,28 @@
    
 }
 
+/* 상품 정보 스타일 추가 */
+.product-info {
+    margin: 10px 0;
+    font-size: 14px;
+}
 
+.product-info strong {
+    color: #333;
+    font-size: 16px;
+}
 
+.additional-items {
+    color: #666;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.total-price {
+    margin-top: 10px;
+    color: #e61e1e;
+    font-size: 16px;
+}
 
 .order-button-area{
     margin-top: 20px;
