@@ -40,15 +40,17 @@ orderController.createOrder = async (req, res) => {
     }
 
     const order = await Order.create(orderData)
+    console.log('order 내역 생성 성공!!!', order)
 
-    for (const item of cart.items) {
+    // 생성된 order를 통해 재고 차감
+    for (const item of order.items) {
       console.log('=== 재고 차감 시작 ===');
-      console.log('Cart item:', item);
-      console.log('Product ID:', item.productId._id);
+      console.log('Order item:', item);
+      console.log('Product ID:', item.productId);
       console.log('Size:', item.size);
       console.log('Quantity:', item.quantity);
       
-      const product = await Product.findById(item.productId._id);
+      const product = await Product.findById(item.productId);
       console.log('Found product:', product ? 'Yes' : 'No');
       
       if (product) {
@@ -72,7 +74,6 @@ orderController.createOrder = async (req, res) => {
         console.log('❌ 재고 차감 중 오류 발생:', error.message);
         console.log('Error details:', error);
       }
-      
       console.log('=== 재고 차감 완료 ===\n');
     }
     
