@@ -110,7 +110,11 @@ orderController.createOrder = async (req, res) => {
 
 orderController.getOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ userId: req.userID })
+    const orders = await Order.find({ userId: req.userID }).populate({
+      path: 'items.productId',
+      model: 'Product',
+      select: '_id name price image stock'
+    })
     res.status(200).json({ success: true, orders })
   } catch (error) {
     res.status(400).json({ success: false, message: "주문 조회 중 오류가 발생했습니다." })

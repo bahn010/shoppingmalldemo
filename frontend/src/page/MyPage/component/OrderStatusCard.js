@@ -4,11 +4,6 @@ import { badgeBg } from "../../../constants/order.constants";
 import { currencyFormat } from "../../../utils/number";
 
 const OrderStatusCard = ({ orderItem }) => {
-  // 데이터 구조 확인을 위한 로그
-  console.log("OrderItem:", orderItem);
-  console.log("Items:", orderItem.items);
-  console.log("First item:", orderItem.items[0]);
-  console.log("Product:", orderItem.items[0]?.productId);
 
   return (
     <div>
