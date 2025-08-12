@@ -7,24 +7,13 @@ orderController.createOrder = async (req, res) => {
   try {
     const userId = req.userID
     const { shippingAddress, contact, totalPrice } = req.body
-    
-    if (!userId) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "사용자 인증이 필요합니다." 
-      })
-    }
-    
+       
     const cart = await Cart.findOne({ userId }).populate({
       path: 'items.productId',
       model: 'Product',
       select: '_id name price stock'
     })
     
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ success: false, message: "장바구니가 비어있습니다." })
-    }
-
     const orderData = {
       userId,
       shippingAddress,
@@ -40,71 +29,25 @@ orderController.createOrder = async (req, res) => {
     }
 
     const order = await Order.create(orderData)
-    console.log('order 내역 생성 성공!!!', order)
 
-    // 생성된 order를 통해 재고 차감
     for (const item of order.items) {
-      console.log('=== 재고 차감 시작 ===');
-      console.log('Order item:', item);
-      console.log('Product ID:', item.productId);
-      console.log('Size:', item.size);
-      console.log('Quantity:', item.quantity);
-      
-      const product = await Product.findById(item.productId);
-      console.log('Found product:', product ? 'Yes' : 'No');
-      
-      if (product) {
-        console.log('Product stock:', product.stock);
-        console.log('Stock for size:', product.stock?.[item.size]);
-        console.log('Stock type:', typeof product.stock?.[item.size]);
-        console.log('차감 전 재고:', product.stock[item.size]);
-        console.log('Product _id:', product._id);
-        console.log('Product isModified:', product.isModified('stock'));
-        console.log('Product isNew:', product.isNew);
-      } else {
-        console.log('❌ Product not found!');
-        continue;
-      }
-      
       try {
-        const beforeStock = product.stock[item.size];
-        
-        // MongoDB $inc 연산자를 사용하여 원자적으로 재고 차감
-        const result = await Product.findByIdAndUpdate(
-          item.productId._id,
-          { $inc: { [`stock.${item.size}`]: -item.quantity } },
-          { new: true }
+        await Product.findByIdAndUpdate(
+          item.productId,
+          { $inc: { [`stock.${item.size}`]: -item.quantity } }
         );
-        
-        console.log('✅ 재고 업데이트 완료 (findByIdAndUpdate 사용)');
-        console.log('차감 전 재고:', beforeStock);
-        console.log('차감 후 재고:', result.stock[item.size]);
-        console.log('차감된 수량:', item.quantity);
-        
-        // 실제 데이터베이스에서 재고 확인
-        const updatedProduct = await Product.findById(item.productId._id);
-        console.log('🔍 저장 후 실제 재고 확인:', updatedProduct.stock[item.size]);
-        console.log('🔍 예상 재고:', beforeStock - item.quantity);
-        console.log('🔍 실제 저장됨:', updatedProduct.stock[item.size] === (beforeStock - item.quantity));
-        
       } catch (error) {
-        console.log('❌ 재고 차감 중 오류 발생:', error.message);
-        console.log('Error details:', error);
+        console.error('재고 차감 중 오류 발생:', error)
       }
-      console.log('=== 재고 차감 완료 ===\n');
     }
     
-    const updatedCart = await Cart.findOneAndUpdate(
-      { userId },
-      { $set: { items: [] } },
-      { new: true }
-    )
+
+    await Cart.findOneAndDelete({ userId })
 
     res.status(200).json({
       success: true,
       message: "주문이 성공적으로 생성되었습니다.",
-      order,
-      updatedCart 
+      order
     })
 
   } catch (error) {
