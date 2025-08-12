@@ -58,18 +58,35 @@ orderController.createOrder = async (req, res) => {
         console.log('Stock for size:', product.stock?.[item.size]);
         console.log('Stock type:', typeof product.stock?.[item.size]);
         console.log('차감 전 재고:', product.stock[item.size]);
+        console.log('Product _id:', product._id);
+        console.log('Product isModified:', product.isModified('stock'));
+        console.log('Product isNew:', product.isNew);
       } else {
         console.log('❌ Product not found!');
         continue;
       }
       
       try {
-        product.stock[item.size] -= item.quantity;
-        console.log('차감 후 재고:', product.stock[item.size]);
+        const beforeStock = product.stock[item.size];
+        
+        // MongoDB $inc 연산자를 사용하여 원자적으로 재고 차감
+        const result = await Product.findByIdAndUpdate(
+          item.productId._id,
+          { $inc: { [`stock.${item.size}`]: -item.quantity } },
+          { new: true }
+        );
+        
+        console.log('✅ 재고 업데이트 완료 (findByIdAndUpdate 사용)');
+        console.log('차감 전 재고:', beforeStock);
+        console.log('차감 후 재고:', result.stock[item.size]);
         console.log('차감된 수량:', item.quantity);
         
-        await product.save();
-        console.log('✅ 재고 업데이트 완료');
+        // 실제 데이터베이스에서 재고 확인
+        const updatedProduct = await Product.findById(item.productId._id);
+        console.log('🔍 저장 후 실제 재고 확인:', updatedProduct.stock[item.size]);
+        console.log('🔍 예상 재고:', beforeStock - item.quantity);
+        console.log('🔍 실제 저장됨:', updatedProduct.stock[item.size] === (beforeStock - item.quantity));
+        
       } catch (error) {
         console.log('❌ 재고 차감 중 오류 발생:', error.message);
         console.log('Error details:', error);
