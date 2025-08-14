@@ -40,9 +40,14 @@ orderController.createOrder = async (req, res) => {
 
     // 재고 부족한 상품이 있으면 에러 반환
     if (stockErrors.length > 0) {
-      const errorMessage = stockErrors.map(error => 
-        `${error.productName} (${error.size}): 요청수량 ${error.requestedQuantity}개, 재고 ${error.availableStock}개`
-      ).join(', ')
+      const errorMessage = stockErrors.map(error => {
+        if (error.error) {
+          return `${error.productName} (${error.size}): ${error.error}`
+        }
+        return `${error.productName} (${error.size}): 요청수량 ${error.requestedQuantity}개, 재고 ${error.availableStock}개`
+      }).join('\n')
+      
+      console.log('재고 부족으로 주문 차단:', stockErrors)
       
       return res.status(400).json({
         success: false,

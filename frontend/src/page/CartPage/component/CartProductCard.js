@@ -9,7 +9,15 @@ const CartProductCard = ({ item }) => {
   const dispatch = useDispatch();
 
   const handleQtyChange = (productId, size, value) => {
-    dispatch(updateQty({ productId, size, quantity: parseInt(value) }))
+    const newQuantity = parseInt(value);
+    const currentStock = item.productId.stock && item.productId.stock[size] !== undefined ? item.productId.stock[size] : 0;
+    
+    if (newQuantity > currentStock) {
+      alert(`${item.productId.name} (${size})의 재고가 부족합니다.\n재고: ${currentStock}개, 요청: ${newQuantity}개`);
+      return;
+    }
+    
+    dispatch(updateQty({ productId, size, quantity: newQuantity }))
       .then(() => {
         // 수량 변경 후 카트 목록 새로고침
         dispatch(getCartList());
@@ -72,16 +80,18 @@ const CartProductCard = ({ item }) => {
               className="qty-dropdown"
               disabled={item.productId.stock && item.productId.stock[item.size] !== undefined && item.productId.stock[item.size] === 0}
             >
-              <option value={1}>1</option>
-              <option value={2}>2</option>
-              <option value={3}>3</option>
-              <option value={4}>4</option>
-              <option value={5}>5</option>
-              <option value={6}>6</option>
-              <option value={7}>7</option>
-              <option value={8}>8</option>
-              <option value={9}>9</option>
-              <option value={10}>10</option>
+              {(() => {
+                const maxStock = item.productId.stock && item.productId.stock[item.size] !== undefined ? item.productId.stock[item.size] : 0;
+                const options = [];
+                
+                for (let i = 1; i <= Math.min(10, maxStock); i++) {
+                  options.push(
+                    <option key={i} value={i}>{i}</option>
+                  );
+                }
+                
+                return options;
+              })()}
             </Form.Select>
           </div>
         </Col>

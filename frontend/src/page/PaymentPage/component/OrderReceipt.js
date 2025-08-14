@@ -35,7 +35,6 @@ const OrderReceipt = () => {
       </div>
       {location.pathname.includes("/cart") && cartList.length > 0 && (
         <>
-          {/* 재고 부족 경고 메시지 */}
           {(() => {
             const stockWarnings = cartList.filter(item => 
               item.productId.stock && 
@@ -70,6 +69,23 @@ const OrderReceipt = () => {
             variant="dark"
             className="payment-button"
             onClick={() => navigate("/payment")}
+            disabled={(() => {
+              // 재고 부족한 상품이 있는지 확인
+              return cartList.some(item => 
+                item.productId.stock && 
+                item.productId.stock[item.size] !== undefined && 
+                item.productId.stock[item.size] < item.quantity
+              );
+            })()}
+            title={(() => {
+              // 재고 부족한 상품이 있으면 툴팁 표시
+              const stockInsufficient = cartList.some(item => 
+                item.productId.stock && 
+                item.productId.stock[item.size] !== undefined && 
+                item.productId.stock[item.size] < item.quantity
+              );
+              return stockInsufficient ? "재고가 부족한 상품이 있어 결제할 수 없습니다." : "";
+            })()}
           >
             결제 계속하기
           </Button>
