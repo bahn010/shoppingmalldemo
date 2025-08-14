@@ -89,6 +89,17 @@ const PaymentPage = () => {
       
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
+        
+        // 재고 부족 에러인 경우 상세 정보 표시
+        if (error.response.data.stockErrors && error.response.data.stockErrors.length > 0) {
+          const stockErrorDetails = error.response.data.stockErrors.map(error => 
+            `${error.productName} (${error.size}): 요청수량 ${error.requestedQuantity}개, 재고 ${error.availableStock}개`
+          ).join('\n');
+          
+          alert(`재고 부족으로 주문할 수 없습니다.\n\n${stockErrorDetails}\n\n장바구니에서 재고가 부족한 상품을 제거하고 다시 시도해주세요.`);
+          navigate("/cart");
+          return;
+        }
       } else if (error.message) {
         errorMessage = error.message;
       }

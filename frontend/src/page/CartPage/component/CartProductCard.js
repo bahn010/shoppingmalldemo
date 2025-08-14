@@ -46,6 +46,20 @@ const CartProductCard = ({ item }) => {
             <strong>₩ {currencyFormat(item.productId.price)}</strong>
           </div>
           <div>Size: {item.size}</div>
+          
+          {/* 재고 상태 표시 */}
+          <div className="stock-status">
+            {item.productId.stock && item.productId.stock[item.size] !== undefined ? (
+              item.productId.stock[item.size] >= item.quantity ? (
+                <span className="stock-available">✓ 재고: {item.productId.stock[item.size]}개</span>
+              ) : (
+                <span className="stock-insufficient">⚠ 재고 부족: {item.productId.stock[item.size]}개 (요청: {item.quantity}개)</span>
+              )
+            ) : (
+              <span className="stock-unknown">재고 정보 없음</span>
+            )}
+          </div>
+          
           <div>Total: ₩ {currencyFormat(item.productId.price * item.quantity)}</div>
           <div>
             Quantity:
@@ -56,6 +70,7 @@ const CartProductCard = ({ item }) => {
               required
               defaultValue={item.quantity}
               className="qty-dropdown"
+              disabled={item.productId.stock && item.productId.stock[item.size] !== undefined && item.productId.stock[item.size] === 0}
             >
               <option value={1}>1</option>
               <option value={2}>2</option>

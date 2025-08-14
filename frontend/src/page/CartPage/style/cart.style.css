@@ -42,3 +42,30 @@
     background-color: white;
     padding: 20px;
 }
+
+/* 재고 상태 스타일 */
+.stock-status {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.stock-available {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.stock-insufficient {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.stock-unknown {
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* 재고가 0인 경우 수량 선택 비활성화 */
+.qty-dropdown:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}

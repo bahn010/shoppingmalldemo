@@ -13,6 +13,44 @@ orderController.createOrder = async (req, res) => {
       model: 'Product',
       select: '_id name price stock'
     })
+
+    if (!cart || cart.items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "장바구니가 비어있습니다."
+      })
+    }
+
+    // 재고 확인 로직
+    const stockErrors = []
+    
+    for (const item of cart.items) {
+      const product = item.productId
+      const currentStock = product.stock[item.size] || 0
+      
+      if (currentStock < item.quantity) {
+        stockErrors.push({
+          productName: product.name,
+          size: item.size,
+          requestedQuantity: item.quantity,
+          availableStock: currentStock
+        })
+      }
+    }
+
+    // 재고 부족한 상품이 있으면 에러 반환
+    if (stockErrors.length > 0) {
+      const errorMessage = stockErrors.map(error => 
+        `${error.productName} (${error.size}): 요청수량 ${error.requestedQuantity}개, 재고 ${error.availableStock}개`
+      ).join(', ')
+      
+      return res.status(400).json({
+        success: false,
+        message: "재고가 부족한 상품이 있습니다.",
+        stockErrors,
+        details: errorMessage
+      })
+    }
     
     const orderData = {
       userId,
@@ -30,6 +68,7 @@ orderController.createOrder = async (req, res) => {
 
     const order = await Order.create(orderData)
 
+    // 재고 차감
     for (const item of order.items) {
       try {
         await Product.findByIdAndUpdate(

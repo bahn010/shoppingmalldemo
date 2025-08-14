@@ -34,13 +34,46 @@ const OrderReceipt = () => {
         </div>
       </div>
       {location.pathname.includes("/cart") && cartList.length > 0 && (
-        <Button
-          variant="dark"
-          className="payment-button"
-          onClick={() => navigate("/payment")}
-        >
-          결제 계속하기
-        </Button>
+        <>
+          {/* 재고 부족 경고 메시지 */}
+          {(() => {
+            const stockWarnings = cartList.filter(item => 
+              item.productId.stock && 
+              item.productId.stock[item.size] !== undefined && 
+              item.productId.stock[item.size] < item.quantity
+            );
+            
+            if (stockWarnings.length > 0) {
+              return (
+                <div className="stock-warning" style={{ 
+                  backgroundColor: '#fff3cd', 
+                  border: '1px solid #ffeaa7', 
+                  borderRadius: '4px', 
+                  padding: '12px', 
+                  marginBottom: '16px',
+                  color: '#856404'
+                }}>
+                  <strong>⚠ 재고 부족 경고</strong>
+                  <br />
+                  {stockWarnings.map(item => 
+                    `${item.productId.name} (${item.size}): 재고 ${item.productId.stock[item.size]}개, 요청 ${item.quantity}개`
+                  ).join(', ')}
+                  <br />
+                  <small>결제 시 주문이 실패할 수 있습니다.</small>
+                </div>
+              );
+            }
+            return null;
+          })()}
+          
+          <Button
+            variant="dark"
+            className="payment-button"
+            onClick={() => navigate("/payment")}
+          >
+            결제 계속하기
+          </Button>
+        </>
       )}
 
       <div>
