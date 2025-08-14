@@ -9,7 +9,6 @@ const initialState = {
   selectedItem: {},
   cartItemTypes: 0,
   totalPrice: 0,
-  updatingItems: {}, // 개별 아이템의 수량 변경 상태를 추적
 };
 
 // Async thunk actions
@@ -74,32 +73,17 @@ export const deleteCartItem = createAsyncThunk(
 
 export const updateQty = createAsyncThunk(
   "cart/updateQty",
-  async ({ productId, size, quantity }, { rejectWithValue, dispatch, getState }) => {
+  async ({ productId, size, quantity }, { rejectWithValue, dispatch }) => {
     try {
-      // 낙관적 업데이트를 위해 현재 상태를 저장
-      const state = getState();
-      const currentItem = state.cart.cartList.find(
-        item => item.productId._id === productId && item.size === size
-      );
-      
-      if (!currentItem) {
-        throw new Error("아이템을 찾을 수 없습니다.");
-      }
-      
       const response = await api.put("/cart", { productId, size, quantity });
+      dispatch(getCartList());
       return response.data;
     } catch (error) {
-      // 에러 발생 시 원래 수량으로 되돌리기 위해 현재 상태 반환
-      const state = getState();
-      const currentItem = state.cart.cartList.find(
-        item => item.productId._id === productId && item.size === size
-      );
-      
       dispatch(showToastMessage({ 
         message: error.response?.data?.message || "수량 변경 실패", 
         status: "error" 
       }));
-      return rejectWithValue({ error: error.response?.data?.message, originalItem: currentItem });
+      return rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -130,42 +114,7 @@ const cartSlice = createSlice({
       state.cartItemTypes = 0;
       state.totalPrice = 0;
     },
-    // 낙관적 업데이트를 위한 리듀서
-    updateQuantityOptimistically: (state, action) => {
-      const { productId, size, quantity } = action.payload;
-      const item = state.cartList.find(
-        item => item.productId._id === productId && item.size === size
-      );
-      
-      if (item) {
-        item.quantity = quantity;
-        // totalPrice 즉시 재계산
-        state.totalPrice = state.cartList.reduce((total, item) => {
-          if (item.productId && typeof item.productId.price === 'number' && typeof item.quantity === 'number') {
-            return total + (item.productId.price * item.quantity);
-          }
-          return total;
-        }, 0);
-      }
-    },
-    // 수량 변경 실패 시 원래 상태로 되돌리기
-    revertQuantityUpdate: (state, action) => {
-      const { productId, size, originalQuantity } = action.payload;
-      const item = state.cartList.find(
-        item => item.productId._id === productId && item.size === size
-      );
-      
-      if (item) {
-        item.quantity = originalQuantity;
-        // totalPrice 재계산
-        state.totalPrice = state.cartList.reduce((total, item) => {
-          if (item.productId && typeof item.productId.price === 'number' && typeof item.quantity === 'number') {
-            return total + (item.productId.price * item.quantity);
-          }
-          return total;
-        }, 0);
-      }
-    },
+    // You can still add reducers here for non-async actions if necessary
   },
   extraReducers: (builder) => {
     builder
@@ -219,18 +168,13 @@ const cartSlice = createSlice({
         state.cartList = [];
         state.totalPrice = 0;
       })
-      .addCase(updateQty.pending, (state, action) => {
-        const { productId, size } = action.meta.arg;
-        // 개별 아이템의 로딩 상태 설정
-        state.updatingItems[`${productId}-${size}`] = true;
+      .addCase(updateQty.pending, (state) => {
+        state.loading = true;
       })
       .addCase(updateQty.fulfilled, (state, action) => {
-        const { productId, size } = action.meta.arg;
-        // 개별 아이템의 로딩 상태 해제
-        delete state.updatingItems[`${productId}-${size}`];
+        state.loading = false;
         state.error = "";
-        
-        // 서버 응답으로 최종 상태 동기화
+        // 로컬 상태 업데이트
         const updatedCart = action.payload.cart;
         const cartItems = updatedCart?.items || [];
         state.cartList = cartItems;
@@ -247,27 +191,8 @@ const cartSlice = createSlice({
         }, 0);
       })
       .addCase(updateQty.rejected, (state, action) => {
-        const { productId, size } = action.meta.arg;
-        // 개별 아이템의 로딩 상태 해제
-        delete state.updatingItems[`${productId}-${size}`];
-        state.error = action.payload?.error || action.payload;
-        
-        // 원래 수량으로 되돌리기
-        if (action.payload?.originalItem) {
-          const item = state.cartList.find(
-            item => item.productId._id === productId && item.size === size
-          );
-          if (item) {
-            item.quantity = action.payload.originalItem.quantity;
-            // totalPrice 재계산
-            state.totalPrice = state.cartList.reduce((total, item) => {
-              if (item.productId && typeof item.productId.price === 'number' && typeof item.quantity === 'number') {
-                return total + (item.productId.price * item.quantity);
-              }
-              return total;
-            }, 0);
-          }
-        }
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(deleteCartItem.pending, (state) => {
         state.loading = true;
@@ -306,4 +231,4 @@ const cartSlice = createSlice({
 });
 
 export default cartSlice.reducer;
-export const { initialCart, clearCart, updateQuantityOptimistically, revertQuantityUpdate } = cartSlice.actions;
+export const { initialCart, clearCart } = cartSlice.actions;

@@ -1,19 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Row, Col, Form, Spinner } from "react-bootstrap";
+import { Row, Col, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { currencyFormat } from "../../../utils/number";
-import { updateQty, deleteCartItem, updateQuantityOptimistically } from "../../../features/cart/cartSlice";
-
+import { updateQty, deleteCartItem } from "../../../features/cart/cartSlice";
 const CartProductCard = ({ item }) => {
   const dispatch = useDispatch();
-  const [localQuantity, setLocalQuantity] = useState(item.quantity);
-  
-  // 해당 아이템의 업데이트 상태 확인
-  const isUpdating = useSelector(state => 
-    state.cart.updatingItems[`${item.productId._id}-${item.size}`]
-  );
 
   const handleQtyChange = (productId, size, value) => {
     const newQuantity = parseInt(value);
@@ -21,15 +14,9 @@ const CartProductCard = ({ item }) => {
     
     if (newQuantity > currentStock) {
       alert(`${item.productId.name} (${size})의 재고가 부족합니다.\n재고: ${currentStock}개, 요청: ${newQuantity}개`);
-      setLocalQuantity(item.quantity); // 원래 값으로 되돌리기
       return;
     }
     
-    // 낙관적 업데이트 적용
-    setLocalQuantity(newQuantity);
-    dispatch(updateQuantityOptimistically({ productId, size, quantity: newQuantity }));
-    
-    // 서버에 업데이트 요청
     dispatch(updateQty({ productId, size, quantity: newQuantity }));
   };
 
@@ -37,13 +24,8 @@ const CartProductCard = ({ item }) => {
     dispatch(deleteCartItem({ productId, size }));
   };
 
-  // 로컬 수량과 실제 수량이 다를 때 동기화
-  React.useEffect(() => {
-    setLocalQuantity(item.quantity);
-  }, [item.quantity]);
-
   return (
-    <div className={`product-card-cart ${isUpdating ? 'updating' : ''}`}>
+    <div className="product-card-cart">
       <Row>
         <Col md={2} xs={12}>
           <img src={item.productId.image} width={112} alt="product" />
@@ -68,43 +50,28 @@ const CartProductCard = ({ item }) => {
           {/* 재고 상태 표시 */}
           <div className="stock-status">
             {item.productId.stock && item.productId.stock[item.size] !== undefined ? (
-              item.productId.stock[item.size] >= localQuantity ? (
+              item.productId.stock[item.size] >= item.quantity ? (
                 <span className="stock-available">✓ 재고: {item.productId.stock[item.size]}개</span>
               ) : (
-                <span className="stock-insufficient">⚠ 재고 부족: {item.productId.stock[item.size]}개 (요청: {localQuantity}개)</span>
+                <span className="stock-insufficient">⚠ 재고 부족: {item.productId.stock[item.size]}개 (요청: {item.quantity}개)</span>
               )
             ) : (
               <span className="stock-unknown">재고 정보 없음</span>
             )}
           </div>
           
-          <div className="total-price">
-            Total: ₩ {currencyFormat(item.productId.price * localQuantity)}
-            {isUpdating && (
-              <Spinner 
-                animation="border" 
-                size="sm" 
-                className="ms-2 updating-spinner"
-              />
-            )}
-          </div>
-          
-          <div className="quantity-section">
-            <span>Quantity:</span>
+          <div>Total: ₩ {currencyFormat(item.productId.price * item.quantity)}</div>
+          <div>
+            Quantity:
             <Form.Select
               onChange={(event) =>
                 handleQtyChange(item.productId._id, item.size, event.target.value)
               }
               required
-              value={localQuantity}
-              key={`${item.productId._id}-${item.size}-${localQuantity}`}
-              className={`qty-dropdown ${isUpdating ? 'updating' : ''}`}
-              disabled={
-                isUpdating || 
-                (item.productId.stock && 
-                 item.productId.stock[item.size] !== undefined && 
-                 item.productId.stock[item.size] === 0)
-              }
+              value={item.quantity}
+              key={`${item.productId._id}-${item.size}-${item.quantity}`}
+              className="qty-dropdown"
+              disabled={item.productId.stock && item.productId.stock[item.size] !== undefined && item.productId.stock[item.size] === 0}
             >
               {(() => {
                 const maxStock = item.productId.stock && item.productId.stock[item.size] !== undefined ? item.productId.stock[item.size] : 0;

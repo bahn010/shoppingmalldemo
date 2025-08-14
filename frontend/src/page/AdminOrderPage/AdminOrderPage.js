@@ -20,7 +20,7 @@ const AdminOrderPage = () => {
   const [searchQuery, setSearchQuery] = useState({
     page: query.get("page") || 1,
     ordernum: query.get("ordernum") || "",
-    limit: 3, 
+    limit: 3,
   });
   const [open, setOpen] = useState(false);
 

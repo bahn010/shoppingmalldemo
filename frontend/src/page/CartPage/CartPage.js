@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-import { Container, Row, Col, Spinner } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import CartProductCard from "./component/CartProductCard";
 import OrderReceipt from "../PaymentPage/component/OrderReceipt";
@@ -9,10 +9,7 @@ import { getCartList } from "../../features/cart/cartSlice";
 
 const CartPage = () => {
   const dispatch = useDispatch();
-  const { cartList, totalPrice, updatingItems } = useSelector((state) => state.cart);
-
-  // 업데이트 중인 아이템이 있는지 확인
-  const hasUpdatingItems = Object.keys(updatingItems).length > 0;
+  const { cartList, totalPrice } = useSelector((state) => state.cart);
 
   useEffect(() => {
     //카트리스트 불러오기
@@ -24,17 +21,9 @@ const CartPage = () => {
       <Row>
         <Col xs={12} md={7}>
           {cartList.length > 0 ? (
-            <>
-              {hasUpdatingItems && (
-                <div className="updating-indicator">
-                  <Spinner animation="border" size="sm" className="me-2" />
-                  <span>카트 정보를 업데이트 중입니다...</span>
-                </div>
-              )}
-              {cartList.map((item) => (
-                <CartProductCard item={item} key={item._id} />
-              ))}
-            </>
+            cartList.map((item) => (
+              <CartProductCard item={item} key={item._id} />
+            ))
           ) : (
             <div className="text-align-center empty-bag">
               <h2>카트가 비어있습니다.</h2>

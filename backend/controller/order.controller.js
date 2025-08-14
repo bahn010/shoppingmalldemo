@@ -132,6 +132,8 @@ orderController.getAdminOrders = async (req, res) => {
     const limitNum = parseInt(limit);
     const skip = (page - 1) * limitNum;
     
+    console.log('Admin Orders Query:', { page, ordernum, limit, limitNum, skip });
+    
     let query = {};
     if (ordernum) {
       query.orderNum = { $regex: ordernum, $options: 'i' };
