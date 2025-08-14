@@ -128,9 +128,9 @@ orderController.getOrders = async (req, res) => {
 
 orderController.getAdminOrders = async (req, res) => {
   try {
-    const { page = 1, ordernum = "" } = req.query;
-    const limit = 10; // 페이지당 주문 수
-    const skip = (page - 1) * limit;
+    const { page = 1, ordernum = "", limit = 10 } = req.query;
+    const limitNum = parseInt(limit);
+    const skip = (page - 1) * limitNum;
     
     let query = {};
     if (ordernum) {
@@ -150,10 +150,10 @@ orderController.getAdminOrders = async (req, res) => {
       })
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limitNum);
     
     const totalOrders = await Order.countDocuments(query);
-    const totalPages = Math.ceil(totalOrders / limit);
+    const totalPages = Math.ceil(totalOrders / limitNum);
     
     res.status(200).json({ 
       success: true, 
