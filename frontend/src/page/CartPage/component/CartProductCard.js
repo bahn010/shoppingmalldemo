@@ -68,7 +68,8 @@ const CartProductCard = ({ item }) => {
                 handleQtyChange(item.productId._id, item.size, event.target.value)
               }
               required
-              defaultValue={item.quantity}
+              value={item.quantity}
+              key={`${item.productId._id}-${item.size}-${item.quantity}`}
               className="qty-dropdown"
               disabled={item.productId.stock && item.productId.stock[item.size] !== undefined && item.productId.stock[item.size] === 0}
             >
