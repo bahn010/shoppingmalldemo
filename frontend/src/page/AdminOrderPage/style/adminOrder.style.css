@@ -1,3 +1,270 @@
-.modal-dialog{
+/* AdminOrder 페이지 스타일 - AdminProduct와 동일한 디자인 */
+
+/* 카드 영역 */
+.card-area {
+    margin-top: 20px;
+}
+
+.admin-order-card {
+    border: 1px solid #6c757d;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.1);
+}
+
+.tag {
+    margin-left: 10px;
+    background-color: #6c757d;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+/* 레이아웃 */
+.display-flex {
+    display: flex;
+    align-items: center;
+}
+
+.locate-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.stock {
+    margin-right: 10px;
+}
+
+.mt-2 {
+    margin-top: 20px;
+}
+
+.mb-2 {
+    margin-bottom: 20px;
+}
+
+.display-center {
+    display: flex;
+    justify-content: center;
+}
+
+/* 폼 컨테이너 */
+.form-container {
+    padding: 30px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.mr-1 {
+    margin-right: 10px;
+}
+
+/* 테이블 스타일 */
+.admin-order-table {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.1);
+    overflow: hidden;
+}
+
+.admin-order-table thead th {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 15px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.admin-order-table tbody td {
+    padding: 15px;
+    border-bottom: 1px solid #dee2e6;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.admin-order-table tbody tr:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.admin-order-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* 상태 태그 스타일 */
+.status-tag {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.status-processing {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.status-shipped {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-delivered {
+    background-color: #6c757d;
+    color: white;
+}
+
+.status-cancelled {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* 페이지네이션 스타일 */
+.pagination {
+    margin-top: 30px;
+    justify-content: center;
+}
+
+.page-item .page-link {
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    margin: 0 2px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.page-item .page-link:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.page-item.active .page-link {
+    background-color: #495057;
+    border-color: #495057;
+    color: white;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #ffffff;
+    border-color: #dee2e6;
+}
+
+/* 검색 박스 스타일 */
+.search-container {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Modal 스타일 */
+.modal-dialog {
     max-width: 700px;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 20px 30px;
+    background-color: #f8f9fa;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+/* 주문 상세 정보 스타일 */
+.order-detail-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #6c757d;
+}
+
+.order-detail-title {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.order-detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.order-detail-item:last-child {
+    border-bottom: none;
+}
+
+.order-detail-label {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.order-detail-value {
+    font-weight: 600;
+    color: #495057;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .admin-order-table thead th,
+    .admin-order-table tbody td {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .order-detail-section {
+        padding: 15px;
+    }
+    
+    .pagination {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .page-item .page-link {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+}
+
+/* 리스트 스타일 제거 */
+.list-style-none {
+    list-style: none;
 }

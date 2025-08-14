@@ -20,6 +20,7 @@ const AdminOrderPage = () => {
   const [searchQuery, setSearchQuery] = useState({
     page: query.get("page") || 1,
     ordernum: query.get("ordernum") || "",
+    limit: 3, 
   });
   const [open, setOpen] = useState(false);
 
@@ -67,12 +68,14 @@ const AdminOrderPage = () => {
     <div className="locate-center">
       <Container>
         <div className="mt-2 display-center mb-2">
-          <SearchBox
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            placeholder="오더번호"
-            field="ordernum"
-          />
+          <div className="search-container">
+            <SearchBox
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              placeholder="오더번호"
+              field="ordernum"
+            />
+          </div>
         </div>
 
         <OrderTable

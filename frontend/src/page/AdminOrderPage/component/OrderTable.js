@@ -6,7 +6,7 @@ import { currencyFormat } from "../../../utils/number";
 const OrderTable = ({ header, data, openEditForm }) => {
   return (
     <div className="overflow-x">
-      <Table striped bordered hover>
+      <Table className="admin-order-table" striped bordered hover>
         <thead>
           <tr>
             {header.map((title) => (

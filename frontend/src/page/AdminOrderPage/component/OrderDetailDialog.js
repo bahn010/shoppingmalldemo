@@ -27,46 +27,63 @@ const OrderDetailDialog = ({ open, handleClose }) => {
         <Modal.Title>Order Detail</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>예약번호: {selectedOrder.orderNum}</p>
-        <p>주문날짜: {selectedOrder.createdAt.slice(0, 10)}</p>
-        <p>이메일: {selectedOrder.userId?.email || 'N/A'}</p>
-        <p>
-          주소: {selectedOrder.shippingAddress || 'N/A'}
-        </p>
-        <p>
-          연락처: {selectedOrder.contact || 'N/A'}
-        </p>
-        <p>주문내역</p>
-        <div className="overflow-x">
-          <Table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Size</th>
-                <th>Unit Price</th>
-                <th>Qty</th>
-                <th>Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {selectedOrder.items.length > 0 &&
-                selectedOrder.items.map((item) => (
-                  <tr key={item._id}>
-                    <td>{item._id}</td>
-                    <td>{item.productId.name}</td>
-                    <td>{item.size}</td>
-                    <td>{currencyFormat(item.price)}</td>
-                    <td>{item.quantity}</td>
-                    <td>{currencyFormat(item.price * item.quantity)}</td>
-                  </tr>
-                ))}
-              <tr>
-                <td colSpan={5}>총계:</td>
-                <td>{currencyFormat(selectedOrder.totalPrice)}</td>
-              </tr>
-            </tbody>
-          </Table>
+        <div className="order-detail-section">
+          <div className="order-detail-title">주문 정보</div>
+          <div className="order-detail-item">
+            <span className="order-detail-label">예약번호:</span>
+            <span className="order-detail-value">{selectedOrder.orderNum}</span>
+          </div>
+          <div className="order-detail-item">
+            <span className="order-detail-label">주문날짜:</span>
+            <span className="order-detail-value">{selectedOrder.createdAt.slice(0, 10)}</span>
+          </div>
+          <div className="order-detail-item">
+            <span className="order-detail-label">이메일:</span>
+            <span className="order-detail-value">{selectedOrder.userId?.email || 'N/A'}</span>
+          </div>
+          <div className="order-detail-item">
+            <span className="order-detail-label">주소:</span>
+            <span className="order-detail-value">{selectedOrder.shippingAddress || 'N/A'}</span>
+          </div>
+          <div className="order-detail-item">
+            <span className="order-detail-label">연락처:</span>
+            <span className="order-detail-value">{selectedOrder.contact || 'N/A'}</span>
+          </div>
+        </div>
+        
+                <div className="order-detail-section">
+          <div className="order-detail-title">주문내역</div>
+          <div className="overflow-x">
+            <Table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Unit Price</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedOrder.items.length > 0 &&
+                  selectedOrder.items.map((item) => (
+                    <tr key={item._id}>
+                      <td>{item._id}</td>
+                      <td>{item.productId.name}</td>
+                      <td>{item.size}</td>
+                      <td>{currencyFormat(item.price)}</td>
+                      <td>{item.quantity}</td>
+                      <td>{currencyFormat(item.price * item.quantity)}</td>
+                    </tr>
+                  ))}
+                <tr>
+                  <td colSpan={5}>총계:</td>
+                  <td>{currencyFormat(selectedOrder.totalPrice)}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </div>
         </div>
         <Form onSubmit={submitStatus}>
           <Form.Group as={Col} controlId="status">
@@ -79,7 +96,7 @@ const OrderDetailDialog = ({ open, handleClose }) => {
               ))}
             </Form.Select>
           </Form.Group>
-          <div className="order-button-area">
+          <div className="order-button-area" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
             <Button
               variant="light"
               onClick={handleClose}
@@ -87,7 +104,7 @@ const OrderDetailDialog = ({ open, handleClose }) => {
             >
               닫기
             </Button>
-            <Button type="submit">저장</Button>
+            <Button type="submit" className="btn-submit">저장</Button>
           </div>
         </Form>
       </Modal.Body>

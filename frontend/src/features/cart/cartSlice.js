@@ -21,7 +21,7 @@ export const addToCart = createAsyncThunk(
         message: "상품이 장바구니에 추가되었습니다.", 
         status: "success" 
       }));
-      dispatch(getCartQty());
+      dispatch(getCartList());
       return response.data;
     } catch (error) {
       // 백엔드에서 반환하는 에러 메시지 사용
@@ -59,7 +59,7 @@ export const deleteCartItem = createAsyncThunk(
         message: "상품이 장바구니에서 삭제되었습니다.", 
         status: "success" 
       }));
-      dispatch(getCartQty());
+      dispatch(getCartList());
       return response.data;
     } catch (error) {
       dispatch(showToastMessage({ 
@@ -76,7 +76,7 @@ export const updateQty = createAsyncThunk(
   async ({ productId, size, quantity }, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.put("/cart", { productId, size, quantity });
-      dispatch(getCartQty());
+      dispatch(getCartList());
       return response.data;
     } catch (error) {
       dispatch(showToastMessage({ 
