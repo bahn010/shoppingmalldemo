@@ -59,6 +59,8 @@ const AdminOrderPage = () => {
 
   const handleClose = () => {
     setOpen(false);
+
+    dispatch(getOrderList({ ...searchQuery }));
   };
 
   return (

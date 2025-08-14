@@ -29,15 +29,12 @@ const OrderDetailDialog = ({ open, handleClose }) => {
       <Modal.Body>
         <p>예약번호: {selectedOrder.orderNum}</p>
         <p>주문날짜: {selectedOrder.createdAt.slice(0, 10)}</p>
-        <p>이메일: {selectedOrder.userId.email}</p>
+        <p>이메일: {selectedOrder.userId?.email || 'N/A'}</p>
         <p>
-          주소:{selectedOrder.shipTo.address + " " + selectedOrder.shipTo.city}
+          주소: {selectedOrder.shippingAddress || 'N/A'}
         </p>
         <p>
-          연락처:
-          {`${
-            selectedOrder.contact.firstName + selectedOrder.contact.lastName
-          } ${selectedOrder.contact.contact}`}
+          연락처: {selectedOrder.contact || 'N/A'}
         </p>
         <p>주문내역</p>
         <div className="overflow-x">
@@ -46,6 +43,7 @@ const OrderDetailDialog = ({ open, handleClose }) => {
               <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Size</th>
                 <th>Unit Price</th>
                 <th>Qty</th>
                 <th>Price</th>
@@ -57,13 +55,14 @@ const OrderDetailDialog = ({ open, handleClose }) => {
                   <tr key={item._id}>
                     <td>{item._id}</td>
                     <td>{item.productId.name}</td>
+                    <td>{item.size}</td>
                     <td>{currencyFormat(item.price)}</td>
-                    <td>{item.qty}</td>
-                    <td>{currencyFormat(item.price * item.qty)}</td>
+                    <td>{item.quantity}</td>
+                    <td>{currencyFormat(item.price * item.quantity)}</td>
                   </tr>
                 ))}
               <tr>
-                <td colSpan={4}>총계:</td>
+                <td colSpan={5}>총계:</td>
                 <td>{currencyFormat(selectedOrder.totalPrice)}</td>
               </tr>
             </tbody>

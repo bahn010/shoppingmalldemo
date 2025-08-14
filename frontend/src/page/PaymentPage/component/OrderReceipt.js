@@ -70,7 +70,6 @@ const OrderReceipt = () => {
             className="payment-button"
             onClick={() => navigate("/payment")}
             disabled={(() => {
-              // 재고 부족한 상품이 있는지 확인
               return cartList.some(item => 
                 item.productId.stock && 
                 item.productId.stock[item.size] !== undefined && 
@@ -78,7 +77,7 @@ const OrderReceipt = () => {
               );
             })()}
             title={(() => {
-              // 재고 부족한 상품이 있으면 툴팁 표시
+
               const stockInsufficient = cartList.some(item => 
                 item.productId.stock && 
                 item.productId.stock[item.size] !== undefined && 

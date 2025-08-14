@@ -17,11 +17,11 @@ const OrderTable = ({ header, data, openEditForm }) => {
         <tbody>
           {data.length > 0 ? (
             data.map((item, index) => (
-              <tr onClick={() => openEditForm(item)}>
+              <tr key={item._id} onClick={() => openEditForm(item)}>
                 <th>{index}</th>
                 <th>{item.orderNum}</th>
                 <th>{item.createdAt.slice(0, 10)}</th>
-                <th>{item.userId.email}</th>
+                <th>{item.userId?.name || item.userId?.email || 'N/A'}</th>
                 {item.items.length > 0 ? (
                   <th>
                     {item.items[0].productId.name}
@@ -31,7 +31,7 @@ const OrderTable = ({ header, data, openEditForm }) => {
                   <th></th>
                 )}
 
-                <th>{item.shipTo.address + " " + item.shipTo.city}</th>
+                <th>{item.shippingAddress?.address || 'N/A'}</th>
 
                 <th>{currencyFormat(item.totalPrice)}</th>
                 <th>
@@ -40,7 +40,7 @@ const OrderTable = ({ header, data, openEditForm }) => {
               </tr>
             ))
           ) : (
-            <tr>No Data to show</tr>
+            <tr><td colSpan={header.length}>No Data to show</td></tr>
           )}
         </tbody>
       </Table>

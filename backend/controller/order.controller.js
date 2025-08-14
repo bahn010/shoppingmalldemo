@@ -126,6 +126,48 @@ orderController.getOrders = async (req, res) => {
   }
 }
 
+orderController.getAdminOrders = async (req, res) => {
+  try {
+    const { page = 1, ordernum = "" } = req.query;
+    const limit = 10; // 페이지당 주문 수
+    const skip = (page - 1) * limit;
+    
+    let query = {};
+    if (ordernum) {
+      query.orderNum = { $regex: ordernum, $options: 'i' };
+    }
+    
+    const orders = await Order.find(query)
+      .populate({
+        path: 'userId',
+        model: 'User',
+        select: 'name email'
+      })
+      .populate({
+        path: 'items.productId',
+        model: 'Product',
+        select: '_id name price image'
+      })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    const totalOrders = await Order.countDocuments(query);
+    const totalPages = Math.ceil(totalOrders / limit);
+    
+    res.status(200).json({ 
+      success: true, 
+      orders,
+      totalPages,
+      currentPage: parseInt(page),
+      totalOrders
+    });
+  } catch (error) {
+    console.error('Admin 주문 조회 오류:', error);
+    res.status(400).json({ success: false, message: "주문 조회 중 오류가 발생했습니다." });
+  }
+}
+
 orderController.updateOrder = async (req, res) => {
   try {
     const { orderId } = req.params

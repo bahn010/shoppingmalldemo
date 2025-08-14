@@ -51,12 +51,35 @@ export const getOrder = createAsyncThunk(
 
 export const getOrderList = createAsyncThunk(
   "order/getOrderList",
-  async (query, { rejectWithValue, dispatch }) => {}
+  async (query, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await api.get("/order/admin", { params: query });
+      if (response.data.success) {
+        return response.data;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "주문 목록 조회 중 오류가 발생했습니다.");
+    }
+  }
 );
 
 export const updateOrder = createAsyncThunk(
   "order/updateOrder",
-  async ({ id, status }, { dispatch, rejectWithValue }) => {}
+  async ({ id, status }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await api.put(`/order/${id}`, { status });
+      if (response.data.success) {
+        dispatch(showToastMessage({ status: "success", message: "주문 상태가 업데이트되었습니다." }));
+        return response.data.order;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "주문 상태 업데이트 중 오류가 발생했습니다.");
+    }
+  }
 );
 
 // Order slice
@@ -100,6 +123,43 @@ const orderSlice = createSlice({
         state.error = "";
       })
       .addCase(getOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // getOrderList
+    builder
+      .addCase(getOrderList.pending, (state) => {
+        state.loading = true;
+        state.error = "";
+      })
+      .addCase(getOrderList.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orderList = action.payload.orders;
+        state.totalPageNum = action.payload.totalPages;
+        state.error = "";
+      })
+      .addCase(getOrderList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // updateOrder
+    builder
+      .addCase(updateOrder.pending, (state) => {
+        state.loading = true;
+        state.error = "";
+      })
+      .addCase(updateOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        // 주문 목록에서 업데이트된 주문 찾아서 상태 변경
+        const index = state.orderList.findIndex(order => order._id === action.payload._id);
+        if (index !== -1) {
+          state.orderList[index] = action.payload;
+        }
+        state.error = "";
+      })
+      .addCase(updateOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

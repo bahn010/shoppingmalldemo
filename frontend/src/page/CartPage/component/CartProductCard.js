@@ -4,7 +4,7 @@ import { Row, Col, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch } from "react-redux";
 import { currencyFormat } from "../../../utils/number";
-import { updateQty, deleteCartItem, getCartList } from "../../../features/cart/cartSlice";
+import { updateQty, deleteCartItem } from "../../../features/cart/cartSlice";
 const CartProductCard = ({ item }) => {
   const dispatch = useDispatch();
 
@@ -17,19 +17,11 @@ const CartProductCard = ({ item }) => {
       return;
     }
     
-    dispatch(updateQty({ productId, size, quantity: newQuantity }))
-      .then(() => {
-        // 수량 변경 후 카트 목록 새로고침
-        dispatch(getCartList());
-      });
+    dispatch(updateQty({ productId, size, quantity: newQuantity }));
   };
 
   const deleteCart = (productId, size) => {
-    dispatch(deleteCartItem({ productId, size }))
-      .then(() => {
-        // 삭제 후 카트 목록 새로고침
-        dispatch(getCartList());
-      });
+    dispatch(deleteCartItem({ productId, size }));
   };
 
   return (
